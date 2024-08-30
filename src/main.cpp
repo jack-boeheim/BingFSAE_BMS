@@ -24,7 +24,7 @@ DigitalOut mosi(D11);                       /* MOSI */
 DigitalIn miso(D12);                        /* MISO */
 DigitalOut sclk(D13);                       /* SCK */
 SPI spi(D11, D12, D13);                     /* SPI MOSI, MISO, SCK */
-// Serial pc(USBTX, USBRX);                    /* USB Tx,Rx */
+BufferedSerial pc(USBTX, USBRX);             /* USB Tx,Rx */
 Timer timer;
 
 
@@ -40,5 +40,5 @@ void spi_init()
     chip_select = 1;
     spi.format(8,0);            /* 8bit data, CPOL-CPHA= 0*/
     spi.frequency(2000000);     /* SPI clock 2Mhz */
-    // pc.baud(115200);              /* Usb baud rate */   
+    pc.baud(115200);              /* Usb baud rate */   
 }
