@@ -42,7 +42,7 @@ extern DigitalOut chip_select;
 */
 void Delay_ms(uint32_t delay)
 {
-   ThisThread::sleep_for((int)delay);
+   ThisThread::sleep_for(delay);
 }
 
 /**
