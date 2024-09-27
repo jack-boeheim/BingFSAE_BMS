@@ -6,6 +6,7 @@ and its licensor.
 
 /* Includes ------------------------------------------------------------------*/
 #include "adbms_main.h"
+#include "mbed.h"
 
 /*
 https://os.mbed.com/platforms/SDP_K1/
@@ -27,11 +28,18 @@ SPI spi(D11, D12, D13);                     /* SPI MOSI, MISO, SCK */
 // Serial pc(USBTX, USBRX);                    /* USB Tx,Rx */
 Timer timer;
 
+PwmOut fan(D7);
 
 int main()
 {
-    spi_init();
-    adbms_main();
+  //  spi_init();
+  //  adbms_main();
+
+    fan.write(0.25f);
+    fan.period_us(40);
+
+    while(1);
+
     return 0;
 }
 
