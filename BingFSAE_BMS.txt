@@ -1,0 +1,62 @@
+Configuration	BingFSAE_BMS
+STM32CubeMX 	6.12.1
+Date	10/12/2024
+MCU	STM32G474RETx
+
+
+
+PERIPHERALS	MODES	FUNCTIONS	PINS
+SYS	SysTick	SYS_VS_Systick	VP_SYS_VS_Systick
+SYS	Dead Battery Signals disabled	SYS_VS_DBSignals	VP_SYS_VS_DBSignals
+
+
+
+Pin Nb	PINs	FUNCTIONs	LABELs
+3	PC14-OSC32_IN*	RCC_OSC32_IN	RCC_OSC32_IN
+4	PC15-OSC32_OUT*	RCC_OSC32_OUT	RCC_OSC32_OUT
+5	PF0-OSC_IN*	RCC_OSC_IN	RCC_OSC_IN
+6	PF1-OSC_OUT*	RCC_OSC_OUT	RCC_OSC_OUT
+49	PA13*	SYS_JTMS-SWDIO	T_SWDIO
+50	PA14*	SYS_JTCK-SWCLK	T_SWCLK
+56	PB3*	SYS_JTDO-SWO	T_SWO
+PERIPHERALS	MODES	FUNCTIONS	PINS
+SYS	SysTick	SYS_VS_Systick	VP_SYS_VS_Systick
+SYS	Dead Battery Signals disabled	SYS_VS_DBSignals	VP_SYS_VS_DBSignals
+
+
+
+Pin Nb	PINs	FUNCTIONs	LABELs
+3	PC14-OSC32_IN*	RCC_OSC32_IN	RCC_OSC32_IN
+4	PC15-OSC32_OUT*	RCC_OSC32_OUT	RCC_OSC32_OUT
+5	PF0-OSC_IN*	RCC_OSC_IN	RCC_OSC_IN
+6	PF1-OSC_OUT*	RCC_OSC_OUT	RCC_OSC_OUT
+49	PA13*	SYS_JTMS-SWDIO	T_SWDIO
+50	PA14*	SYS_JTCK-SWCLK	T_SWCLK
+56	PB3*	SYS_JTDO-SWO	T_SWO
+
+
+
+SOFTWARE PROJECT
+
+Project Settings : 
+Project Name : BingFSAE_BMS
+Project Folder : C:\Users\kevin\STM32CubeIDE\workspace_1.16.1\BingFSAE_BMS
+Toolchain / IDE : STM32CubeIDE
+Firmware Package Name and Version : STM32Cube FW_G4 V1.6.0
+
+
+Code Generation Settings : 
+STM32Cube MCU packages and embedded software packs : Copy only the necessary library files
+Generate peripheral initialization as a pair of '.c/.h' files per peripheral : No
+Backup previously generated files when re-generating : No
+Delete previously generated files when not re-generated : Yes
+Set all free pins as analog (to optimize the power consumption) : No
+
+
+Toolchains Settings : 
+Compiler Optimizations : 
+
+
+
+
+
