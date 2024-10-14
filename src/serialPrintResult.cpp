@@ -96,7 +96,7 @@ void printWriteConfig(uint8_t tIC, cell_asic *IC, TYPE type, GRP grp)
  * Function: printReadConfig
  * @brief Print read config A/B result.
  *
- * @details This function Print read config result into terminal.
+ * @details This function Print read config result into terminal.21
  *
  * Parameters:
  * @param [in]  tIC      Total IC
@@ -1035,6 +1035,7 @@ void printMenu()
   printf("Clear Aux registers: 18              \n");
   printf("Clear Spin registers: 19             \n");
   printf("Clear Fcell registers: 20            \n");
+  printf("Write Configuration: 21 \n");
   printf("\n");
   printf("Print '0' for menu\n");
   printf("Please enter command: \n");
@@ -2057,6 +2058,7 @@ void printMenu()
   printf("Clear Aux registers: 18 \n");
   printf("Clear Spin registers: 19 \n");
   printf("Clear Fcell registers: 20 \n");
+  printf("Write Configuration: 21 \n");
 
   printf("\n");
   printf("Print '0' for menu\n");

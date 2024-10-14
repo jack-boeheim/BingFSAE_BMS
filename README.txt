@@ -1,13 +1,22 @@
 Overview
 --------
 These code files provide drivers to communicate and operate ADBMS6830 BMS IC.
+This code was developed and tested on SDP-K1 controller board https://os.mbed.com/platforms/SDP_K1/. 
 
 Communication Protocol: SPI
 
 How to Get Started
 ------------------
+instructions on how to Engineers User Guide are here: 
+- Documentation/SDP-K1 MBED Keil Studio User Guide for ADBMS6830.pdf
+- Documentation/SDP-K1 - IAR Embedded Workbench Project User Guide for ADBMS6830.pdf
 
-See the "Getting Started with ADI BMS" document linked here https://docs.google.com/document/d/1BPhXdeoTc5abzhX_3JwA9faUVMU6c4YBWsfH-pH7_c0/edit?usp=sharing
+
+Notes
+-----
+If using Win 7, install serial drivers for Mbed. https://os.mbed.com/docs/mbed-os/v5.12/tutorials/windows-serial-driver.html
+A detailed user guide on SDP-K1 controller board is available here https://www.analog.com/en/design-center/evaluation-hardware-and-software/evaluation-boards-kits/SDP-K1.html.
+
 
 License
 -------
