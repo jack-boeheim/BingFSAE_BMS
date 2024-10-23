@@ -42,8 +42,9 @@ extern DigitalOut chip_select;
 */
 void Delay_ms(uint32_t delay)
 {
+    ThisThread::sleep_for(delay);
   // wait_ms((int)delay);
-   ThisThread::sleep_for(std::chrono::milliseconds(delay));  
+  // ThisThread::sleep_for(std::chrono::milliseconds(delay));  
 }
 
 /**
@@ -207,6 +208,7 @@ void stopTimer()
 uint32_t getTimCount()
 {   
   uint32_t count = 0;
+  // count = timer.elapsed_time().count(); 
   count = timer.elapsed_time().count(); 
   timer.reset();
   return(count);
