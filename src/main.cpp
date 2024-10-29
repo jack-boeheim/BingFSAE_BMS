@@ -19,7 +19,7 @@ CSB =  D10
 int main(void);
 void spi_init(void);
 
-DigitalOut chip_select(PA_4);                /* SPI chip select */
+DigitalOut chip_select(D10);                /* SPI chip select */
 DigitalOut mosi(D11);                       /* MOSI */
 DigitalIn miso(D12);                        /* MISO */
 DigitalOut sclk(D13);                       /* SCK */
