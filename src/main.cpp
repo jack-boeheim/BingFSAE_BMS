@@ -39,6 +39,6 @@ void spi_init()
 {   
     chip_select = 1;
     spi.format(8,0);            /* 8bit data, CPOL-CPHA= 0*/
-    spi.frequency(2000000);     /* SPI clock 2Mhz */
+    spi.frequency(500000);     /* SPI clock 2Mhz */
     pc.baud(115200);              /* Usb baud rate */   
 }
