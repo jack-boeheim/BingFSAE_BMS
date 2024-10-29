@@ -1,17 +1,57 @@
 #include "adbms_main.h"
 #include "main.h"
-    
+
+// Set pin modes
+DigitalIn miso(PIN_SPI_MISO);       // SPI MISO
+DigitalIn driving(PIN_DRIVING);
+DigitalIn charging(PIN_CHARGING);
+
+DigitalOut master(MASTER_ENABLE);
+DigitalOut chip_select(PIN_SPI_CS); // SPI chip select
+DigitalOut mosi(PIN_SPI_MOSI);      // SPI MOSI
+DigitalOut sclk(PIN_SPI_SCLK);      // SPI CLK
+
+// Set SPI pins (MOSI, MISO, SCLK)
+SPI spi(PIN_SPI_MOSI, PIN_SPI_MISO, PIN_SPI_SCLK);
+
+// Configure CAN
+CAN can(PB_8, PB_9);
+
+// Serial pc(USBTX, USBRX); // USB TX, RX
+
 Timer timer;
 
-state_t FSM_State = INIT;
+state_t FSM_state = INIT;
 
+/*-------------------------------------------------------------------------------------------------
+ Main Loop
+-------------------------------------------------------------------------------------------------*/
 int main() {
-    switch (FSM_State) {
+    switch (FSM_state) {
         case (INIT):
             spi_init();
-
-            // Run the MBED BMS application
             adbms_main();
+
+            // Send AWAKE message
+            can.write( CANMessage(0x00, "AWAKE", 5, CANData, CANStandard) );
+
+            // Check vehicle is active and charged
+            if ( is_driving() && is_charging() ) {
+                // Write config registers
+
+                // Begin heartbeat
+
+                // Check current sensor
+
+                // Check battery cell voltage
+                // adBms6830_read_cell_voltages();
+
+                // Check the fans
+
+                FSM_state = PRECHARGE;
+            } else {
+                FSM_state = FAULT;
+            }
             
             break;
 
