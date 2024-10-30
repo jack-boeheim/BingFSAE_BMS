@@ -23,28 +23,35 @@ Timer timer;
 
 state_t FSM_state = INIT;
 
+float cell_voltages[NUM_PACKS][NUM_CELLS];
+
+
+
 /*-------------------------------------------------------------------------------------------------
  Main Loop
 -------------------------------------------------------------------------------------------------*/
 int main() {
+    // Run the AD BMS application
+    adbms_main();
+
     switch (FSM_state) {
         case (INIT):
             spi_init();
-            adbms_main();
 
             // Send AWAKE message
+            
             can.write( CANMessage(0x00, "AWAKE", 5, CANData, CANStandard) );
 
             // Check vehicle is active and charged
             if ( is_driving() && is_charging() ) {
                 // Write config registers
-
+                adBms6830_init_config(TOTAL_IC, &IC[0]);
                 // Begin heartbeat
-
+                
                 // Check current sensor
 
                 // Check battery cell voltage
-                // adBms6830_read_cell_voltages();
+                read_cell_voltages(1, &IC[0], );
 
                 // Check the fans
 
@@ -73,3 +80,4 @@ int main() {
     
     return 0;
 }
+

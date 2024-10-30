@@ -39,6 +39,12 @@
 #define BAUD_RATE       115200
 
 /*------------------------------------------
+ Macros - Other
+------------------------------------------*/
+#define NUM_CELLS
+#define NUM_PACKS
+
+/*------------------------------------------
  States
 ------------------------------------------*/
 typedef enum state {
@@ -60,6 +66,12 @@ void can_init();
 bool is_driving();
 
 bool is_charging();
+
+void get_cell_voltages(uint8_t tIC, cell_asic * IC, float ** data);
+
+void read_cell_voltages(uint8_t tIC, cell_asic *ic, float ** data);
+
+void config_reg_init();
 
 // End safe guards
 #endif /* MAIN_H */
