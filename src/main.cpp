@@ -17,7 +17,8 @@ SPI spi(PIN_SPI_MOSI, PIN_SPI_MISO, PIN_SPI_SCLK);
 // Configure CAN
 CAN can(PB_8, PB_9);
 
-// Serial pc(USBTX, USBRX); // USB TX, RX
+
+Serial pc(USBTX, USBRX);                    
 
 Timer timer;
 
