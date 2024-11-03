@@ -1,4 +1,5 @@
 #include "adbms_main.h"
+#include "adBms_Application.h"
 #include "main.h"
 
 // Set pin modes
@@ -24,8 +25,9 @@ Timer timer;
 
 state_t FSM_state = INIT;
 
-float cell_voltages[NUM_PACKS][NUM_CELLS];
 
+float cell_voltages[NUM_MODULES][NUM_CELLS];
+cell_asic IC[TOTAL_IC];
 
 
 /*-------------------------------------------------------------------------------------------------
@@ -44,7 +46,7 @@ int main() {
             can.write( CANMessage(0x00, "AWAKE", 5, CANData, CANStandard) );
 
             // Check vehicle is active and charged
-            if ( is_driving() && is_charging() ) {
+            if (is_driving()) {
                 // Write config registers
                 adBms6830_init_config(TOTAL_IC, &IC[0]);
                 // Begin heartbeat
@@ -52,7 +54,7 @@ int main() {
                 // Check current sensor
 
                 // Check battery cell voltage
-                read_cell_voltages(1, &IC[0], );
+               // read_cell_voltages(1, &IC[0], );
 
                 // Check the fans
 

@@ -21,7 +21,6 @@
  Macros - Pins
 ------------------------------------------*/
 #define MASTER_ENABLE   D5
-
 #define PIN_SPI_SCLK    D13
 #define PIN_SPI_CS      D10
 #define PIN_SPI_MOSI    D11
@@ -29,20 +28,21 @@
 #define SPI_BITS        8
 #define SPI_MODE        0 // CPOL - CPHA = 0 (0 - 0 = 0)
 
-#define PIN_DRIVING     0
-#define PIN_CHARGING    0
+#define PIN_DRIVING     D14
+#define PIN_CHARGING    D15
 
 /*------------------------------------------
  Macros - Communication Rates
 ------------------------------------------*/
-#define SPI_CLK         2000000
+#define SPI_CLK         500000
 #define BAUD_RATE       115200
 
 /*------------------------------------------
  Macros - Other
 ------------------------------------------*/
-#define NUM_CELLS
-#define NUM_PACKS
+#define NUM_MODULES 1
+#define NUM_CELLS  12*NUM_MODULES
+#define TOTAL_IC NUM_MODULES
 
 /*------------------------------------------
  States
@@ -67,11 +67,11 @@ bool is_driving();
 
 bool is_charging();
 
-void get_cell_voltages(uint8_t tIC, cell_asic * IC, float ** data);
+// void get_cell_voltages(uint8_t tIC, cell_asic * IC, float ** data);
 
-void read_cell_voltages(uint8_t tIC, cell_asic *ic, float ** data);
+// void read_cell_voltages(uint8_t tIC, cell_asic *ic, float ** data);
 
-void config_reg_init();
+// void config_reg_init();
 
 // End safe guards
 #endif /* MAIN_H */

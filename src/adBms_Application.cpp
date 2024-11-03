@@ -22,6 +22,8 @@ and its licensor.
 #include "adBms6830GenericType.h"
 #include "serialPrintResult.h"
 #include "mcuWrapper.h"
+#include "main.h"
+
 #ifdef MBED
 extern Serial pc;
 #endif
@@ -32,8 +34,7 @@ extern Serial pc;
 *******************************************************************************
 */
 
-#define TOTAL_IC 1
-cell_asic IC[TOTAL_IC];
+extern cell_asic IC[TOTAL_IC];
 
 /* ADC Command Configurations */
 RD      REDUNDANT_MEASUREMENT           = RD_OFF;
