@@ -18,7 +18,7 @@
 #include "adbms_main.h"
 
 /*------------------------------------------
- Macros - Pins
+ Macros - Pins (Pin Defs to change according to Board Design)
 ------------------------------------------*/
 #define MASTER_ENABLE   D5
 #define PIN_SPI_SCLK    D13
@@ -30,6 +30,8 @@
 
 #define PIN_DRIVING     D14
 #define PIN_CHARGING    D15
+#define PIN_FAULT       D0
+#define PIN_SHUTDOWN    PG_11 
 
 /*------------------------------------------
  Macros - Communication Rates
@@ -56,6 +58,8 @@ typedef enum state {
     FAULT
 } state_t;
 
+
+
 /*------------------------------------------
  Prototypes
 ------------------------------------------*/
@@ -66,6 +70,12 @@ void can_init();
 bool is_driving();
 
 bool is_charging();
+
+bool is_shutdown_closed();
+
+void assert_fault_high();
+
+void assert_fault_low();
 
 // void get_cell_voltages(uint8_t tIC, cell_asic * IC, float ** data);
 

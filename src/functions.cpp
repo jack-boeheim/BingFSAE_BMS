@@ -3,9 +3,6 @@
 #include "serialPrintResult.h"
 #include "mcuWrapper.h"
 
-
-
-
 extern SPI spi; 
 extern CAN can;
 extern Serial pc;
@@ -14,37 +11,10 @@ extern DigitalOut master;
 extern DigitalOut chip_select;
 extern DigitalIn driving;
 extern DigitalIn charging;
+extern DigitalIn shutdown_tap;
+extern DigitalOut fault;
 
 
-// /* ADC Command Configurations */
-// RD      REDUNDANT_MEASUREMENT           = RD_OFF;
-// CH      AUX_CH_TO_CONVERT               = AUX_ALL;
-// CONT    CONTINUOUS_MEASUREMENT          = SINGLE;
-// OW_C_S  CELL_OPEN_WIRE_DETECTION        = OW_OFF_ALL_CH;
-// OW_AUX  AUX_OPEN_WIRE_DETECTION         = AUX_OW_OFF;
-// PUP     OPEN_WIRE_CURRENT_SOURCE        = PUP_DOWN;
-// DCP     DISCHARGE_PERMITTED             = DCP_OFF;
-// RSTF    RESET_FILTER                    = RSTF_OFF;
-// ERR     INJECT_ERR_SPI_READ             = WITHOUT_ERR;
-
-// /* Set Under Voltage and Over Voltage Thresholds */
-// const float OV_THRESHOLD = 4.2;                 /* Volt */
-// const float UV_THRESHOLD = 3.0;                 /* Volt */
-// const int OWC_Threshold = 2000;                 /* Cell Open wire threshold(mili volt) */
-// const int OWA_Threshold = 50000;                /* Aux Open wire threshold(mili volt) */
-// const uint32_t LOOP_MEASUREMENT_COUNT = 1;      /* Loop measurment count */
-// const uint16_t MEASUREMENT_LOOP_TIME  = 10;     /* milliseconds(mS)*/
-// uint32_t loop_count = 0;
-// uint32_t pladc_count;
-
-// /*Loop Measurement Setup These Variables are ENABLED or DISABLED Remember ALL CAPS*/
-// LOOP_MEASURMENT MEASURE_CELL            = ENABLED;        /*   This is ENABLED or DISABLED       */
-// LOOP_MEASURMENT MEASURE_AVG_CELL        = ENABLED;        /*   This is ENABLED or DISABLED       */
-// LOOP_MEASURMENT MEASURE_F_CELL          = ENABLED;        /*   This is ENABLED or DISABLED       */
-// LOOP_MEASURMENT MEASURE_S_VOLTAGE       = ENABLED;        /*   This is ENABLED or DISABLED       */
-// LOOP_MEASURMENT MEASURE_AUX             = DISABLED;       /*   This is ENABLED or DISABLED       */
-// LOOP_MEASURMENT MEASURE_RAUX            = DISABLED;       /*   This is ENABLED or DISABLED       */
-// LOOP_MEASURMENT MEASURE_STAT            = DISABLED;       /*   This is ENABLED or DISABLED       */
 
 /*-----------------------------------------------------------------------------
  Initialize SPI communication protocol
@@ -57,7 +27,7 @@ void spi_init() {
     // 8-bit data frame, CPOL - CPHA = 0
     spi.format(SPI_BITS, SPI_MODE);
 
-    // SPI clock of 2MHz
+    // SPI clock of 500 kHz
     spi.frequency(SPI_CLK);
 
     // USB baud rate
@@ -83,6 +53,18 @@ bool is_driving() {
 -----------------------------------------------------------------------------*/
 bool is_charging() {
     return charging.read();
+}
+
+bool is_shutdown_closed(){
+    return shutdown_tap.read();
+}
+
+void assert_fault_high(){
+    fault = 1;
+}
+
+void assert_fault_low(){
+    fault = 0;
 }
 
 /*-----------------------------------------------------------------------------

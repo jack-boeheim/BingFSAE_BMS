@@ -59,10 +59,10 @@ uint32_t pladc_count;
 
 /*Loop Measurement Setup These Variables are ENABLED or DISABLED Remember ALL CAPS*/
 LOOP_MEASURMENT MEASURE_CELL            = ENABLED;        /*   This is ENABLED or DISABLED       */
-LOOP_MEASURMENT MEASURE_AVG_CELL        = ENABLED;        /*   This is ENABLED or DISABLED       */
-LOOP_MEASURMENT MEASURE_F_CELL          = ENABLED;        /*   This is ENABLED or DISABLED       */
+LOOP_MEASURMENT MEASURE_AVG_CELL        = DISABLED;        /*   This is ENABLED or DISABLED       */
+LOOP_MEASURMENT MEASURE_F_CELL          = DISABLED;        /*   This is ENABLED or DISABLED       */
 LOOP_MEASURMENT MEASURE_S_VOLTAGE       = ENABLED;        /*   This is ENABLED or DISABLED       */
-LOOP_MEASURMENT MEASURE_AUX             = DISABLED;        /*   This is ENABLED or DISABLED       */
+LOOP_MEASURMENT MEASURE_AUX             = ENABLED;        /*   This is ENABLED or DISABLED       */
 LOOP_MEASURMENT MEASURE_RAUX            = DISABLED;        /*   This is ENABLED or DISABLED       */
 LOOP_MEASURMENT MEASURE_STAT            = DISABLED;        /*   This is ENABLED or DISABLED       */
 
