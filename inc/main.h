@@ -38,6 +38,8 @@
 ------------------------------------------*/
 #define SPI_CLK         500000
 #define BAUD_RATE       115200
+#define CAN_BAUD_RATE   250000
+#define CAN_CELL_V_ID   0x01
 
 /*------------------------------------------
  Macros - Other
@@ -60,6 +62,7 @@ typedef enum state {
 
 
 
+
 /*------------------------------------------
  Prototypes
 ------------------------------------------*/
@@ -76,6 +79,8 @@ bool is_shutdown_closed();
 void assert_fault_high();
 
 void assert_fault_low();
+
+void voltage_can_message(cell_asic *IC);
 
 // void get_cell_voltages(uint8_t tIC, cell_asic * IC, float ** data);
 

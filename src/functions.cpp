@@ -67,6 +67,31 @@ void assert_fault_low(){
     fault = 0;
 }
 
+void voltage_can_message(cell_asic *IC) {
+   CANMessage can_v_msg;
+   can_v_msg.id = CAN_CELL_V_ID;    // Set CAN ID 
+   can_v_msg.format = CANStandard;  // Use standard CAN format (11-bit ID)
+   can_v_msg.type = CANData;        // Message type (data frame)
+   can_v_msg.len = 8;               // Set length to 8 bytes
+    for (int i = 0; i < NUM_MODULES;  ++i){
+        for(int j = 0; j < NUM_CELLS; ++j){
+
+                can_v_msg.data[0] = 12*i + j; //Cell ID
+                can_v_msg.data[1] = ((IC[i].cell.c_codes[j] >> 8) & 0xFF); //8 MSB of Cell Voltage 
+                can_v_msg.data[2] = (IC[i].cell.c_codes[j] & 0xFF); //8 LSB of Cell Voltage 
+                can_v_msg.data[3] = 0; //8 LSB of Cell Voltage 
+                can_v_msg.data[4] = 0; //8 LSB of Cell Voltage 
+                can_v_msg.data[5] = 0; //8 LSB of Cell Voltage 
+                can_v_msg.data[6] = 0; //8 LSB of Cell Voltage 
+                can_v_msg.data[7] = 0; //Checksum 
+
+        }       
+    }
+}
+
+
+
+
 /*-----------------------------------------------------------------------------
  Get all BMS cell voltages stored in an array
 -----------------------------------------------------------------------------*/

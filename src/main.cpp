@@ -28,7 +28,7 @@ Serial pc(USBTX, USBRX);
 Timer timer;
 state_t FSM_state = INIT;
 // assert_fault_high();
-// float cell_voltages[NUM_MODULES][NUM_CELLS];
+float cell_voltages[NUM_MODULES][NUM_CELLS];
 cell_asic IC[NUM_MODULES];
 
 
@@ -52,7 +52,6 @@ int main() {
                 adBms6830_init_config(TOTAL_IC, &IC[0]);
 
                 // Check current sensor (use same method as ECU code to cook value)
-
                 // Check battery cell voltage (run reading and check OV/UV flag & others)
                 // read_cell_voltages(1, &IC[0], );
                 // Check the fans (Joe to add fan check function)
@@ -81,16 +80,19 @@ int main() {
         
         case (DRIVE_MAIN): 
         
-          adBms6830_write_config(TOTAL_IC, &IC[0]); //Confirm this uses values pointed to by &IC 
+          adBms6830_write_config(TOTAL_IC, &IC[0]); 
           adBms6830_start_adc_cell_voltage_measurment(TOTAL_IC);
           adBms6830_start_adc_s_voltage_measurment(TOTAL_IC);
           adBms6830_start_aux_voltage_measurment(TOTAL_IC, &IC[0]);
 
             while(is_shutdown_closed()){
                measurement_loop();
+               voltage_can_message(&IC[0]);
                Delay_ms(10);
             }
+            
             FSM_state = FAULT;
+            
             break;
         
         case (DRIVE_DEBUG):
@@ -100,6 +102,7 @@ int main() {
         
         case (CHARGE):
              measurement_loop();
+             voltage_can_message(&IC[0]);
             break;
         
         case (FAULT):
