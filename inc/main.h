@@ -36,10 +36,17 @@
 /*------------------------------------------
  Macros - Communication Rates
 ------------------------------------------*/
-#define SPI_CLK         500000
-#define BAUD_RATE       115200
-#define CAN_BAUD_RATE   250000
+#define SPI_CLK                500000
+#define BAUD_RATE              115200
+#define CAN_BAUD_RATE_DRIVE    250000
+#define CAN_BAUD_RATE_CHARGE   250000
+
+/*------------------------------------------
+ Macros - CAN Msg IDs
+------------------------------------------*/
 #define CAN_CELL_V_ID   0x01
+#define CAN_CHARGER_MSG_ID 0x1806E5F4
+
 
 /*------------------------------------------
  Macros - Other

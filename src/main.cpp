@@ -44,7 +44,7 @@ int main() {
             spi_init(); 
 
             // Send AWAKE message
-            can.write(CANMessage(0x00, "AWAKE", 5, CANData, CANStandard) );
+          //   can.write(CANMessage(0x00, "AWAKE", 5, CANData, CANStandard) );
 
             // Check if Accumulator is in drive mode
             if (is_driving() && !is_charging()) {
@@ -79,7 +79,8 @@ int main() {
             break;
         
         case (DRIVE_MAIN): 
-        
+          
+          can.frequency(CAN_BAUD_RATE_DRIVE);
           adBms6830_write_config(TOTAL_IC, &IC[0]); 
           adBms6830_start_adc_cell_voltage_measurment(TOTAL_IC);
           adBms6830_start_adc_s_voltage_measurment(TOTAL_IC);
@@ -97,10 +98,12 @@ int main() {
         
         case (DRIVE_DEBUG):
          //Need to figure out a good way to switch into this state (code macro, or input pin)
-
+            can.frequency(CAN_BAUD_RATE_DRIVE);
             break;
         
         case (CHARGE):
+            
+             can.frequency(CAN_BAUD_RATE_CHARGE);
              measurement_loop();
              voltage_can_message(&IC[0]);
             break;
