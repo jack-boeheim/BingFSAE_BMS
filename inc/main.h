@@ -31,7 +31,7 @@
 #define PIN_DRIVING     D14
 #define PIN_CHARGING    D15
 #define PIN_FAULT       D0
-#define PIN_SHUTDOWN    PG_11 
+#define PIN_SHUTDOWN    PA_0 
 
 /*------------------------------------------
  Macros - Communication Rates
@@ -87,7 +87,7 @@ void assert_fault_high();
 
 void assert_fault_low();
 
-void voltage_can_message(cell_asic *IC);
+void voltage_can_message(uint16_t test_IV, uint16_t test_res, uint16_t test_OCV);
 
 // void get_cell_voltages(uint8_t tIC, cell_asic * IC, float ** data);
 

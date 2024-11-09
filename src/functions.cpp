@@ -5,7 +5,7 @@
 
 extern SPI spi; 
 extern CAN can;
-extern Serial pc;
+//extern Serial pc;
 extern cell_asic IC;
 extern DigitalOut master;
 extern DigitalOut chip_select;
@@ -67,7 +67,7 @@ void assert_fault_low(){
     fault = 0;
 }
 
-void voltage_can_message(cell_asic *IC) {
+void voltage_can_message(uint16_t test_IV, uint16_t test_res, uint16_t test_OCV) {
    CANMessage can_v_msg;
    can_v_msg.id = CAN_CELL_V_ID;    // Set CAN ID 
    can_v_msg.format = CANStandard;  // Use standard CAN format (11-bit ID)
@@ -77,12 +77,12 @@ void voltage_can_message(cell_asic *IC) {
         for(int j = 0; j < NUM_CELLS; ++j){
 
                 can_v_msg.data[0] = 12*i + j; //Cell ID
-                can_v_msg.data[1] = ((IC[i].cell.c_codes[j] >> 8) & 0xFF); //8 MSB of InstantaneousCell Voltage 
-                can_v_msg.data[2] = (IC[i].cell.c_codes[j] & 0xFF); //8 LSB of Instantaneous Cell Voltage 
-                can_v_msg.data[3] = 0; //8 MSB of Internal Resistance  (placeholder 0 for now)
-                can_v_msg.data[4] = 0; //8 LSB of Internal Resistance  (placeholder 0 for now)
-                can_v_msg.data[5] = 0; //8 MSB of Open Circuit Voltage (placeholder 0 for now)
-                can_v_msg.data[6] = 0; //8 LSB of Open Circuit Voltage (placeholder 0 for now)
+                can_v_msg.data[1] = ((test_IV >> 8) & 0xFF); //8 MSB of InstantaneousCell Voltage 
+                can_v_msg.data[2] = (test_IV & 0xFF); //8 LSB of Instantaneous Cell Voltage 
+                can_v_msg.data[3] = ((test_res >> 8) & 0xFF); //8 MSB of Internal Resistance  (placeholder 0 for now)
+                can_v_msg.data[4] = (test_res & 0xFF); //8 LSB of Internal Resistance  (placeholder 0 for now)
+                can_v_msg.data[5] = ((test_OCV >> 8) & 0xFF); //8 MSB of Open Circuit Voltage (placeholder 0 for now)
+                can_v_msg.data[6] = (test_OCV & 0xFF); //8 LSB of Open Circuit Voltage (placeholder 0 for now)
                 can_v_msg.data[7] = (((CAN_CELL_V_ID + 8 + can_v_msg.data[0] + can_v_msg.data[1] + 
                 can_v_msg.data[2] + can_v_msg.data[3] + can_v_msg.data[4] + 
                 can_v_msg.data[5] + can_v_msg.data[6]) >> 8) & 0xFF); //Checksum (used same process as Orion)

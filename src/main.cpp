@@ -23,7 +23,7 @@ SPI spi(PIN_SPI_MOSI, PIN_SPI_MISO, PIN_SPI_SCLK);
 CAN can(PB_8, PB_9);
 
 //Configure Serial Communication for Debug 
-Serial pc(USBTX, USBRX);                    
+//Serial pc(USBTX, USBRX);                    
 
 Timer timer;
 state_t FSM_state = INIT;
@@ -37,6 +37,13 @@ cell_asic IC[NUM_MODULES];
 -------------------------------------------------------------------------------------------------*/
 int main() {
     
+    uint16_t test_IV = 0xFFFF;
+    uint16_t test_res = 0xF0F0;
+    uint16_t test_OCV = 0x0F0F;
+
+    voltage_can_message(test_IV, test_res, test_OCV);
+
+
     switch (FSM_state) {
         case (INIT):
             fault = 1;
@@ -88,7 +95,7 @@ int main() {
 
             while(is_shutdown_closed()){
                measurement_loop();
-               voltage_can_message(&IC[0]);
+               //voltage_can_message(&IC[0]);
                Delay_ms(10);
             }
             
@@ -105,7 +112,7 @@ int main() {
             
              can.frequency(CAN_BAUD_RATE_CHARGE);
              measurement_loop();
-             voltage_can_message(&IC[0]);
+             //voltage_can_message(&IC[0]);
             break;
         
         case (FAULT):
