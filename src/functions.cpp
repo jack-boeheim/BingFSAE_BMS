@@ -87,9 +87,10 @@ void voltage_can_message(cell_asic *IC) {
                 can_v_msg.data[7] = (((CAN_CELL_V_ID + 8 + can_v_msg.data[0] + can_v_msg.data[1] + 
                 can_v_msg.data[2] + can_v_msg.data[3] + can_v_msg.data[4] + 
                 can_v_msg.data[5] + can_v_msg.data[6]) >> 8) & 0xFF); //Checksum (used same process as Orion)
-
+                can.write(can_v_msg);      
+        
         } 
-        can.write(can_v_msg);      
+       
     }
 }
 
