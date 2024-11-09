@@ -78,6 +78,7 @@ int main() {
                 fault = 0;
                     while(!is_shutdown_closed()){
                         //Wait until SDC is closed
+                        pc.printf("Waiting for SDC to close");
                     }
                 Delay_ms(500); //Wait for Precharge (500ms after SDC closed) (temporary should accept input from Tractive Precharge control board)    
                 FSM_state = DRIVE_MAIN;
@@ -85,6 +86,7 @@ int main() {
             
             case (DRIVE_MAIN): 
             
+            pc.printf("Running Drive Main Measurement Loop");
             can.frequency(CAN_BAUD_RATE_DRIVE);
             adBms6830_write_config(TOTAL_IC, &IC[0]); 
             adBms6830_start_adc_cell_voltage_measurment(TOTAL_IC);
