@@ -25,7 +25,7 @@ Using the BMS Driver Application can:
 #include "common.h"
 #include "adbms_main.h"
 #ifdef MBED
-// extern Serial pc;
+extern Serial pc;
 #endif
 /**************************************** BMS Driver APIs definitions ********************************************/
 /* Precomputed CRC15 Table */
@@ -293,7 +293,7 @@ uint8_t regData_size
   if((data == NULL) || (copyArray == NULL))
   {
 #ifdef MBED     
-    printf("Failed to allocate spi read data memory \n");
+    pc.printf(" Failed to allocate spi read data memory \n");
 #else
     printf(" Failed to allocate spi read data memory \n");
 #endif    
@@ -380,7 +380,7 @@ void adBmsReadData(uint8_t tIC, cell_asic *ic, uint8_t cmd_arg[2], TYPE type, GR
   if((pec_error == NULL) || (cmd_count == NULL) || (read_buffer == NULL))
   {
 #ifdef MBED
-    printf("Failed to allocate memory \n");
+    pc.printf(" Failed to allocate memory \n");
 #else
     printf(" Failed to allocate memory \n");
 #endif
@@ -630,7 +630,7 @@ uint8_t *data
   if(cmd == NULL)
   {
 #ifdef MBED
-    printf("Failed to allocate cmd array memory \n");
+    pc.printf(" Failed to allocate cmd array memory \n");
 #else
     printf(" Failed to allocate cmd array memory \n");
 #endif  
@@ -699,7 +699,7 @@ void adBmsWriteData(uint8_t tIC, cell_asic *ic, uint8_t cmd_arg[2], TYPE type, G
   if(write_buffer == NULL)
   {
 #ifdef MBED
-    printf("Failed to allocate write_buffer array memory \n");
+    pc.printf(" Failed to allocate write_buffer array memory \n");
 #else
     printf(" Failed to allocate write_buffer array memory \n");
 #endif

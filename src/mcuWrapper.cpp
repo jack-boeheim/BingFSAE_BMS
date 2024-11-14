@@ -18,10 +18,10 @@ and its licensor.
 */
 #include "common.h"
 #include "mcuWrapper.h"
-#define WAKEUP_DELAY 10                          /* BMS ic wakeup delay  */
+#define WAKEUP_DELAY 4                          /* BMS ic wakeup delay  */
 
 #ifdef MBED
-// extern Serial pc;
+extern Serial pc;
 extern SPI spi;
 extern Timer timer;
 extern DigitalOut chip_select;
@@ -42,9 +42,7 @@ extern DigitalOut chip_select;
 */
 void Delay_ms(uint32_t delay)
 {
-    ThisThread::sleep_for(delay);
-  // wait_ms((int)delay);
-  // ThisThread::sleep_for(std::chrono::milliseconds(delay));  
+  wait_ms((int)delay);
 }
 
 /**
