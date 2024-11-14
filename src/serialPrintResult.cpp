@@ -96,7 +96,7 @@ void printWriteConfig(uint8_t tIC, cell_asic *IC, TYPE type, GRP grp)
  * Function: printReadConfig
  * @brief Print read config A/B result.
  *
- * @details This function Print read config result into terminal.
+ * @details This function Print read config result into terminal.21
  *
  * Parameters:
  * @param [in]  tIC      Total IC
