@@ -88,7 +88,7 @@ void voltage_can_message(cell_asic *IC) {
                 can_v_msg.data[2] + can_v_msg.data[3] + can_v_msg.data[4] + 
                 can_v_msg.data[5] + can_v_msg.data[6]) >> 8) & 0xFF); //Checksum (used same process as Orion)
                 can.write(can_v_msg);      
-        
+                Delay_ms(1);
         } 
        
     }
@@ -113,63 +113,29 @@ void charger_can_message(uint16_t maxChargeV, uint16_t maxChargeI, bool bChargeS
 }
 
 
+_Bool read_charger_can_message(float * pOutputVoltageV, float * pOutputCurrentA){
+
+    //Declare temporary message to receive data
+    CANMessage msg;
+
+    //If message received
+    if(can.read(msg)){
+        //Grab byte 1 and 2 of charger message MSB and LSB of output voltage respectively
+        //Multiply by .1V/Byte to convert to V
+        (*pOutputVoltageV) = ((msg.data[0] << 8) + msg.data[1])*0.1;
+
+        //Grab byte 3 and 4 of charger message MSB and LSB of output current respectively
+        //Multiply by .1A/Byte to convert to A
+        (*pOutputCurrentA) = ((msg.data[2] << 8) + msg.data[3])*0.1;
+        return 1;
+    }
+    //If message not received
+    else{
+        return 0;
+    }
 
 
-/*-----------------------------------------------------------------------------
- Get all BMS cell voltages stored in an array
------------------------------------------------------------------------------*/
-// void get_cell_voltages(uint8_t tIC, cell_asic * IC, float ** data) {
-//     float voltage;
-//     int16_t temp;
-    
-//     // 
-//     for (uint8_t ic = 0; ic < tIC; ++ic) {
-//         for (uint8_t index = 0; index < CELL; ++index) {
-//             temp = IC[ic].cell.c_codes[index];
-//             voltage = getVoltage(temp);
+}
 
-//             data[ic][index] = voltage;
-//         }
-//     }
-    
-// }
 
-// /*-----------------------------------------------------------------------------
-//  Update all cell voltages
-// -----------------------------------------------------------------------------*/
-// void read_cell_voltages(uint8_t tIC, cell_asic * ic, float ** data) {
-//   adBmsWakeupIc(tIC);
-//   adBmsReadData(tIC, &ic[0], RDCVA, Cell, A);
-//   adBmsReadData(tIC, &ic[0], RDCVB, Cell, B);
-//   adBmsReadData(tIC, &ic[0], RDCVC, Cell, C);
-//   adBmsReadData(tIC, &ic[0], RDCVD, Cell, D);
-//   adBmsReadData(tIC, &ic[0], RDCVE, Cell, E);
-//   adBmsReadData(tIC, &ic[0], RDCVF, Cell, F);
-//   data = get_cell_voltages(tIC, &ic[0], data);
-// }
 
-// /*-----------------------------------------------------------------------------
-//  Initialize the config registers
-// -----------------------------------------------------------------------------*/
-// void config_reg_init() {
-//     uint8_t loop_count = 0;
-
-//     adBmsWakeupIc(NUM_MODULES);
-//     adBmsWriteData(NUM_MODULES, &IC[0], WRCFGA, Config, A);
-//     adBmsWriteData(NUM_MODULES, &IC[0], WRCFGB, Config, B);
-//     adBmsWakeupIc(NUM_MODULES);
-    
-//     adBms6830_Adcv(REDUNDANT_MEASUREMENT, CONTINUOUS, DISCHARGE_PERMITTED, RESET_FILTER, CELL_OPEN_WIRE_DETECTION);
-//     Delay_ms(1);
-//     adBms6830_Adcv(RD_ON, CONTINUOUS, DISCHARGE_PERMITTED, RESET_FILTER, CELL_OPEN_WIRE_DETECTION);
-//     Delay_ms(1);
-//     adBms6830_Adsv(CONTINUOUS, DISCHARGE_PERMITTED, CELL_OPEN_WIRE_DETECTION);
-//     Delay_ms(8);
-
-//     while(loop_count < LOOP_MEASUREMENT_COUNT) {
-//       measurement_loop();
-//       Delay_ms(MEASUREMENT_LOOP_TIME);
-      
-//       ++loop_count;
-//     }
-// }

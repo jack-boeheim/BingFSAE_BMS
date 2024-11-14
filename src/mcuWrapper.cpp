@@ -206,8 +206,7 @@ void stopTimer()
 uint32_t getTimCount()
 {   
   uint32_t count = 0;
-  // count = timer.elapsed_time().count(); 
-  count = timer.elapsed_time().count(); 
+  count = timer.read_us();
   timer.reset();
   return(count);
 }
