@@ -56,6 +56,28 @@ const uint16_t Crc15Table[256] =
   0x585a, 0x8ba7, 0x4e3e, 0x450c, 0x8095
 };
 
+/* Pre-computed CRC10 Table */
+static const uint16_t crc10Table[256] =
+    {
+        0x000, 0x08f, 0x11e, 0x191, 0x23c, 0x2b3, 0x322, 0x3ad, 0x0f7, 0x078, 0x1e9, 0x166, 0x2cb, 0x244, 0x3d5, 0x35a,
+        0x1ee, 0x161, 0x0f0, 0x07f, 0x3d2, 0x35d, 0x2cc, 0x243, 0x119, 0x196, 0x007, 0x088, 0x325, 0x3aa, 0x23b, 0x2b4,
+        0x3dc, 0x353, 0x2c2, 0x24d, 0x1e0, 0x16f, 0x0fe, 0x071, 0x32b, 0x3a4, 0x235, 0x2ba, 0x117, 0x198, 0x009, 0x086,
+        0x232, 0x2bd, 0x32c, 0x3a3, 0x00e, 0x081, 0x110, 0x19f, 0x2c5, 0x24a, 0x3db, 0x354, 0x0f9, 0x076, 0x1e7, 0x168,
+        0x337, 0x3b8, 0x229, 0x2a6, 0x10b, 0x184, 0x015, 0x09a, 0x3c0, 0x34f, 0x2de, 0x251, 0x1fc, 0x173, 0x0e2, 0x06d,
+        0x2d9, 0x256, 0x3c7, 0x348, 0x0e5, 0x06a, 0x1fb, 0x174, 0x22e, 0x2a1, 0x330, 0x3bf, 0x012, 0x09d, 0x10c, 0x183,
+        0x0eb, 0x064, 0x1f5, 0x17a, 0x2d7, 0x258, 0x3c9, 0x346, 0x01c, 0x093, 0x102, 0x18d, 0x220, 0x2af, 0x33e, 0x3b1,
+        0x105, 0x18a, 0x01b, 0x094, 0x339, 0x3b6, 0x227, 0x2a8, 0x1f2, 0x17d, 0x0ec, 0x063, 0x3ce, 0x341, 0x2d0, 0x25f,
+        0x2e1, 0x26e, 0x3ff, 0x370, 0x0dd, 0x052, 0x1c3, 0x14c, 0x216, 0x299, 0x308, 0x387, 0x02a, 0x0a5, 0x134, 0x1bb,
+        0x30f, 0x380, 0x211, 0x29e, 0x133, 0x1bc, 0x02d, 0x0a2, 0x3f8, 0x377, 0x2e6, 0x269, 0x1c4, 0x14b, 0x0da, 0x055,
+        0x13d, 0x1b2, 0x023, 0x0ac, 0x301, 0x38e, 0x21f, 0x290, 0x1ca, 0x145, 0x0d4, 0x05b, 0x3f6, 0x379, 0x2e8, 0x267,
+        0x0d3, 0x05c, 0x1cd, 0x142, 0x2ef, 0x260, 0x3f1, 0x37e, 0x024, 0x0ab, 0x13a, 0x1b5, 0x218, 0x297, 0x306, 0x389,
+        0x1d6, 0x159, 0x0c8, 0x047, 0x3ea, 0x365, 0x2f4, 0x27b, 0x121, 0x1ae, 0x03f, 0x0b0, 0x31d, 0x392, 0x203, 0x28c,
+        0x038, 0x0b7, 0x126, 0x1a9, 0x204, 0x28b, 0x31a, 0x395, 0x0cf, 0x040, 0x1d1, 0x15e, 0x2f3, 0x27c, 0x3ed, 0x362,
+        0x20a, 0x285, 0x314, 0x39b, 0x036, 0x0b9, 0x128, 0x1a7, 0x2fd, 0x272, 0x3e3, 0x36c, 0x0c1, 0x04e, 0x1df, 0x150,
+        0x3e4, 0x36b, 0x2fa, 0x275, 0x1d8, 0x157, 0x0c6, 0x049, 0x313, 0x39c, 0x20d, 0x282, 0x12f, 0x1a0, 0x031, 0x0be};
+/* Const 16 section end */
+
+
 /**
 *******************************************************************************
 * Function: Pec15_Calc
@@ -88,51 +110,119 @@ uint8_t *data /* Array of data that will be used to calculate  a PEC */
   return(remainder*2);/* The CRC15 has a 0 in the LSB so the remainder must be multiplied by 2 */
 }
 
-uint16_t pec10_calc(bool rx_cmd, int len, uint8_t *data)
+uint16_t pec10_calc( bool bIsRxCmd, int nLength, uint8_t *pDataBuf)
 {
-  uint16_t remainder = 16; /* PEC_SEED;   0000010000 */ 
-  uint16_t polynom = 0x8F; /* x10 + x7 + x3 + x2 + x + 1 <- the CRC15 polynomial         100 1000 1111   48F */
-  
-  /* Perform modulo-2 division, a byte at a time. */
-  for (uint8_t pbyte = 0; pbyte < len; ++pbyte)
-  {
-    /* Bring the next byte into the remainder. */
-    remainder ^= (uint16_t)(data[pbyte] << 2);
-    /* Perform modulo-2 division, a bit at a time.*/
-    for (uint8_t bit_ = 8; bit_ > 0; --bit_)
+    uint16_t nRemainder = 16u; /* PEC_SEED */
+    /* x10 + x7 + x3 + x2 + x + 1 <- the CRC10 polynomial 100 1000 1111 */
+    uint16_t nPolynomial = 0x8Fu;
+    uint8_t nByteIndex, nBitIndex;
+ 
+    for (nByteIndex = 0u; nByteIndex < nLength; ++nByteIndex)
     {
-      /* Try to divide the current data bit. */
-      if ((remainder & 0x200) > 0)//equivalent to remainder & 2^14 simply check for MSB
-      {
-        remainder = (uint16_t)((remainder << 1));
-        remainder = (uint16_t)(remainder ^ polynom);
-      }
-      else
-      {
-        remainder = (uint16_t)(remainder << 1);
-      }
+        /* Bring the next byte into the remainder. */
+        nRemainder ^= (uint16_t)((uint16_t)pDataBuf[nByteIndex] << 2u);
+ 
+        /* Perform modulo-2 division, a bit at a time.*/
+        for (nBitIndex = 8u; nBitIndex > 0u; --nBitIndex)
+        {
+            /* Try to divide the current data bit. */
+            if ((nRemainder & 0x200u) > 0u)
+            { /* equivalent to remainder & 2^14 simply check for MSB */
+                nRemainder = (uint16_t)((nRemainder << 1u));
+                nRemainder = (uint16_t)(nRemainder ^ nPolynomial);
+            }
+            else
+            {
+                nRemainder = (uint16_t)(nRemainder << 1u);
+            }
+        }
     }
-  }
-  if (rx_cmd == true)
-  {  
-    remainder ^= (uint16_t)((data[len] & 0xFC) << 2);
+ 
+    /* If array is from received buffer add command counter to crc calculation */
+    if (bIsRxCmd == true)
+    {
+        nRemainder ^= (uint16_t)(((uint16_t)pDataBuf[nLength] & (uint8_t)0xFC) << 2u);
+    }
     /* Perform modulo-2 division, a bit at a time */
-    for (uint8_t bit_ = 6; bit_ > 0; --bit_)
+    for (nBitIndex = 6u; nBitIndex > 0u; --nBitIndex)
     {
-      /* Try to divide the current data bit */
-      if ((remainder & 0x200) > 0)//equivalent to remainder & 2^14 simply check for MSB
-      {
-        remainder = (uint16_t)((remainder << 1));
-        remainder = (uint16_t)(remainder ^ polynom);
-      }
-      else
-      {
-        remainder = (uint16_t)((remainder << 1));
-      }
+        /* Try to divide the current data bit */
+        if ((nRemainder & 0x200u) > 0u)
+        {
+            nRemainder = (uint16_t)((nRemainder << 1u));
+            nRemainder = (uint16_t)(nRemainder ^ nPolynomial);
+        }
+        else
+        {
+            nRemainder = (uint16_t)((nRemainder << 1u));
+        }
     }
-  }
-  return ((uint16_t)(remainder & 0x3FF));
+    return ((uint16_t)(nRemainder & 0x3FFu));
 }
+
+uint16_t adi_pec10_calc_table(bool bIsRxCmd, uint8_t nLength, uint8_t *pDataBuf)
+{
+    uint16_t nRemainder = 16u; /* PEC_SEED */
+    /* x10 + x7 + x3 + x2 + x + 1 <- the CRC10 polynomial 100 1000 1111 */
+    uint16_t nPolynomial = 0x8Fu;
+    uint8_t nByteIndex, nBitIndex;
+    uint16_t nTableAddr;
+ 
+    for (nByteIndex = 0u; nByteIndex < nLength; ++nByteIndex)
+    {
+        /* calculate PEC table address */
+        nTableAddr = (uint16_t)(((uint16_t)(nRemainder >> 2) ^ (uint8_t)pDataBuf[nByteIndex]) &
+                                (uint8_t)0xff);
+        nRemainder = (uint16_t)(((uint16_t)(nRemainder << 8)) ^ crc10Table[nTableAddr]);
+    }
+    /* If array is from received buffer add command counter to crc calculation */
+    if (bIsRxCmd == true)
+    {
+        nRemainder ^= (uint16_t)(((uint16_t)pDataBuf[nLength] & (uint8_t)0xFC) << 2u);
+    }
+    /* Perform modulo-2 division, a bit at a time */
+    for (nBitIndex = 6u; nBitIndex > 0u; --nBitIndex)
+    {
+        /* Try to divide the current data bit */
+        if ((nRemainder & 0x200u) > 0u)
+        {
+            nRemainder = (uint16_t)((nRemainder << 1u));
+            nRemainder = (uint16_t)(nRemainder ^ nPolynomial);
+        }
+        else
+        {
+            nRemainder = (uint16_t)((nRemainder << 1u));
+        }
+    }
+    return ((uint16_t)(nRemainder & 0x3FFu));
+}
+
+/* Method to calculate the pec 10 for given byte array 
+  param "pDataBuf" : Input, Array of bytes 
+  returns: uint16_t value of calculated PEC */
+uint16_t CalcPEC10(bool bIsRxCmd, uint8_t nLength, uint8_t *pDataBuf)
+{
+    const uint16_t pecD10 = 0x0200, XOR = 0x08F;
+    int maxBit = ((nLength - 2) * 8) + 6;
+    int bitCounter = 0;
+    uint16_t pec = 0x0010;
+    int nBytes = nLength;
+    while (true)
+    {
+        nBytes--;
+        if (nBytes < 0) return pec;
+        uint8_t iter8 = pDataBuf[nLength];
+        for (uint8_t mask = 0x80; mask > 0x00; mask >>= 1, bitCounter++)
+        {
+            if (bitCounter == maxBit) return pec;
+            bool wantXOR = ((mask & iter8) != 0) ^ ((pec & pecD10) != 0);
+            pec <<= 1;
+            if (wantXOR) pec ^= XOR;
+            pec &= 0x3FF;
+        }
+    }
+}
+
 
 /**
 *******************************************************************************
@@ -202,11 +292,11 @@ uint8_t regData_size
   copyArray = (uint8_t *)calloc(BYTES_IN_REG, sizeof(uint8_t));
   if((data == NULL) || (copyArray == NULL))
   {
-   #ifdef MBED     
+#ifdef MBED     
+    printf("Failed to allocate spi read data memory \n");
+#else
     printf(" Failed to allocate spi read data memory \n");
-    #else
-    printf(" Failed to allocate spi read data memory \n");
-    #endif    
+#endif    
     exit(0);
   }
   else
@@ -217,12 +307,13 @@ uint8_t regData_size
     cmd_pec = Pec15_Calc(2, cmd);
     cmd[2] = (uint8_t)(cmd_pec >> 8);
     cmd[3] = (uint8_t)(cmd_pec);
+    adBmsWakeupIc(tIC);
     adBmsCsLow();
     spiWriteReadBytes(&cmd[0], &data[0], RX_BUFFER);                 /* Read the configuration data of all ICs on the daisy chain into readdata array */
     adBmsCsHigh();
     for (uint8_t current_ic = 0; current_ic < tIC; current_ic++)     /* executes for each ic in the daisy chain and packs the data */
     {                                                                                                                                     /* Into the r_comm array as well as check the received data for any bit errors */
-      for (uint8_t current_byte = 0; current_byte < (BYTES_IN_REG-2); current_byte++)
+      for (uint8_t current_byte = 0; current_byte < (BYTES_IN_REG); current_byte++)
       {
         rx_data[(current_ic*BYTES_IN_REG)+current_byte] = data[current_byte + (current_ic*BYTES_IN_REG)];
       }
@@ -242,80 +333,6 @@ uint8_t regData_size
   }
   free(data);
   free(copyArray);
-}
-
-/**
-*******************************************************************************
-* Function: spiWriteData
-* @brief Spi Write Bms Data
-*
-* @details This function write the data into bms ic.
-*
-* Parameters:
-* @param [in]   tIC      Total IC
-*
-* @param [in]  tx_cmd   Tx command bytes
-*
-* @param [in]  *data   Data pointer
-*               
-* @return None 
-*
-*******************************************************************************
-*/
-void spiWriteData
-(
-uint8_t tIC, 
-uint8_t tx_cmd[2], 
-uint8_t *data
-)
-{
-  uint8_t BYTES_IN_REG = TX_DATA;
-  uint8_t CMD_LEN = 4 + (RX_DATA * tIC);
-  uint16_t data_pec, cmd_pec;
-  uint8_t *cmd, copyArray[TX_DATA], src_address = 0;
-  uint8_t cmd_index;
-  cmd = (uint8_t *)calloc(CMD_LEN, sizeof(uint8_t)); 
-  if(cmd == NULL)
-  {
-#ifdef MBED
-    printf(" Failed to allocate cmd array memory \n");
-#else
-    printf(" Failed to allocate cmd array memory \n");
-#endif  
-    exit(0);
-  }
-  else
-  {
-    cmd[0] = tx_cmd[0];
-    cmd[1] = tx_cmd[1];
-    cmd_pec = Pec15_Calc(2, cmd);
-    cmd[2] = (uint8_t)(cmd_pec >> 8);
-    cmd[3] = (uint8_t)(cmd_pec);
-    cmd_index = 4;
-    /* executes for each LTC68xx, this loops starts with the last IC on the stack */
-    for (uint8_t current_ic = tIC; current_ic > 0; current_ic--)                
-    {                                                                         
-      src_address = ((current_ic-1) * TX_DATA); 
-      /* The first configuration written is received by the last IC in the daisy chain */
-      for (uint8_t current_byte = 0; current_byte < BYTES_IN_REG; current_byte++)
-      {
-        cmd[cmd_index] = data[((current_ic-1)*6)+current_byte];
-        cmd_index = cmd_index + 1;
-      }
-      /* Copy each ic correspond data + pec value for calculate data pec */
-      memcpy(&copyArray[0], &data[src_address], TX_DATA); /* dst, src, size */
-      /* calculating the PEC for each Ics configuration register data */
-      data_pec = (uint16_t)pec10_calc(true,BYTES_IN_REG, &copyArray[0]);  
-      cmd[cmd_index] = (uint8_t)(data_pec >> 8);
-      cmd_index = cmd_index + 1;
-      cmd[cmd_index] = (uint8_t)data_pec;
-      cmd_index = cmd_index + 1;
-    }
-    adBmsCsLow();
-    spiWriteBytes(CMD_LEN, &cmd[0]);
-    adBmsCsHigh();
-  }
-  free(cmd); 
 }
 
 /**
@@ -363,7 +380,7 @@ void adBmsReadData(uint8_t tIC, cell_asic *ic, uint8_t cmd_arg[2], TYPE type, GR
   if((pec_error == NULL) || (cmd_count == NULL) || (read_buffer == NULL))
   {
 #ifdef MBED
-    printf(" Failed to allocate memory \n");
+    printf("Failed to allocate memory \n");
 #else
     printf(" Failed to allocate memory \n");
 #endif
@@ -578,6 +595,81 @@ void adBmsReadData(uint8_t tIC, cell_asic *ic, uint8_t cmd_arg[2], TYPE type, GR
   free(pec_error); 
   free(cmd_count); 
 }
+
+/**
+*******************************************************************************
+* Function: spiWriteData
+* @brief Spi Write Bms Data
+*
+* @details This function write the data into bms ic.
+*
+* Parameters:
+* @param [in]   tIC      Total IC
+*
+* @param [in]  tx_cmd   Tx command bytes
+*
+* @param [in]  *data   Data pointer
+*               
+* @return None 
+*
+*******************************************************************************
+*/
+void spiWriteData
+(
+uint8_t tIC, 
+uint8_t tx_cmd[2], 
+uint8_t *data
+)
+{
+  uint8_t BYTES_IN_REG = TX_DATA;
+  uint8_t CMD_LEN = 4 + (RX_DATA * tIC);
+  uint16_t data_pec, cmd_pec;
+  uint8_t *cmd, copyArray[TX_DATA], src_address = 0;
+  uint8_t cmd_index;
+  cmd = (uint8_t *)calloc(CMD_LEN, sizeof(uint8_t)); 
+  if(cmd == NULL)
+  {
+#ifdef MBED
+    printf("Failed to allocate cmd array memory \n");
+#else
+    printf(" Failed to allocate cmd array memory \n");
+#endif  
+    exit(0);
+  }
+  else
+  {
+    cmd[0] = tx_cmd[0];
+    cmd[1] = tx_cmd[1];
+    cmd_pec = Pec15_Calc(2, cmd);
+    cmd[2] = (uint8_t)(cmd_pec >> 8);
+    cmd[3] = (uint8_t)(cmd_pec);
+    cmd_index = 4;
+    /* executes for each LTC68xx, this loops starts with the last IC on the stack */
+    for (uint8_t current_ic = tIC; current_ic > 0; current_ic--)                
+    {                                                                         
+      src_address = ((current_ic-1) * TX_DATA); 
+      /* The first configuration written is received by the last IC in the daisy chain */
+      for (uint8_t current_byte = 0; current_byte < BYTES_IN_REG; current_byte++)
+      {
+        cmd[cmd_index] = data[((current_ic-1)*6)+current_byte];
+        cmd_index = cmd_index + 1;
+      }
+      /* Copy each ic correspond data + pec value for calculate data pec */
+      memcpy(&copyArray[0], &data[src_address], TX_DATA); /* dst, src, size */
+      /* calculating the PEC for each Ics configuration register data */
+      data_pec = (uint16_t)pec10_calc(false, BYTES_IN_REG, &copyArray[0]);  
+      cmd[cmd_index] = (uint8_t)(data_pec >> 8);
+      cmd_index = cmd_index + 1;
+      cmd[cmd_index] = (uint8_t)data_pec;
+      cmd_index = cmd_index + 1;
+    }
+    adBmsCsLow();
+    spiWriteBytes(CMD_LEN, &cmd[0]);
+    adBmsCsHigh();
+  }
+  free(cmd); 
+}
+
 /**
 *******************************************************************************
 * Function: adBmsWriteData
@@ -607,7 +699,7 @@ void adBmsWriteData(uint8_t tIC, cell_asic *ic, uint8_t cmd_arg[2], TYPE type, G
   if(write_buffer == NULL)
   {
 #ifdef MBED
-    printf(" Failed to allocate write_buffer array memory \n");
+    printf("Failed to allocate write_buffer array memory \n");
 #else
     printf(" Failed to allocate write_buffer array memory \n");
 #endif
@@ -695,6 +787,7 @@ void adBmsWriteData(uint8_t tIC, cell_asic *ic, uint8_t cmd_arg[2], TYPE type, G
       break;
     }
   }
+  adBmsWakeupIc(tIC);
   spiWriteData(tIC, cmd_arg, &write_buffer[0]); 
   free(write_buffer);
 }
