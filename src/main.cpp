@@ -38,12 +38,13 @@ cell_asic IC[NUM_MODULES];
 int main() {
     
     can.frequency(CAN_BAUD_RATE_CHARGE);
-    uint16_t test_IV = 0xFFFF;
-    uint16_t test_res = 0xF0F0;
-    uint16_t test_OCV = 0x0F0F;
+    float outputVoltage;
+    float outputCurrent;
+
     while(1)
     {
-        voltage_can_message(test_IV, test_res, test_OCV);
+        read_charger_can_message(&outputVoltage, &outputCurrent);
+        pc.printf("outputVoltage:%f, outputCurrent:%f\n", outputVoltage, outputCurrent);
     }
 
 
