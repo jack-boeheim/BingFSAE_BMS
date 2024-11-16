@@ -28,10 +28,12 @@
 #define SPI_BITS        8
 #define SPI_MODE        0 // CPOL - CPHA = 0 (0 - 0 = 0)
 
-#define PIN_DRIVING     D14
-#define PIN_CHARGING    D15
-#define PIN_FAULT       D0
-#define PIN_SHUTDOWN    PG_11 
+#define PIN_DRIVING         D14
+#define PIN_CHARGING        D15
+#define PIN_FAULT           D0
+#define PIN_SHUTDOWN        PG_11 
+#define PIN_CURRENT_SENOSR  0 // Placeholder for now
+#define PIN_TEMP_SENSOR     0 // Placeholder for now
 
 /*------------------------------------------
  Macros - Communication Rates
@@ -44,16 +46,25 @@
 /*------------------------------------------
  Macros - CAN Msg IDs
 ------------------------------------------*/
-#define CAN_CELL_V_ID   0x01
-#define CAN_CHARGER_MSG_ID 0x1806E5F4
-
+#define CAN_CELL_V_ID           0x01
+#define CAN_CHARGER_MSG_ID      0x1806E5F4
 
 /*------------------------------------------
  Macros - Other
 ------------------------------------------*/
-#define NUM_MODULES 1
-#define NUM_CELLS  12*NUM_MODULES
-#define TOTAL_IC NUM_MODULES
+#define NUM_MODULES     1
+#define NUM_CELLS       12 * NUM_MODULES
+#define TOTAL_IC        NUM_MODULES
+#define HIGH            1
+#define LOW             0
+#define PRECHARGE_TIME  500
+#define OVER_TEMP       0 // Placeholder for now
+
+/*------------------------------------------
+ Macros - Debugging
+------------------------------------------*/
+// Uncomment when debugging
+// #define DEBUG
 
 /*------------------------------------------
  States
@@ -67,15 +78,10 @@ typedef enum state {
     FAULT
 } state_t;
 
-
-
-
 /*------------------------------------------
  Prototypes
 ------------------------------------------*/
 void spi_init();
-
-void can_init();
 
 bool is_driving();
 
@@ -83,15 +89,23 @@ bool is_charging();
 
 bool is_shutdown_closed();
 
+bool is_current_sensor_connected();
+
 void assert_fault_high();
 
 void assert_fault_low();
 
 void voltage_can_message(cell_asic *IC);
 
-// void get_cell_voltages(uint8_t tIC, cell_asic * IC, float ** data);
+void get_cell_voltages(uint8_t tIC, cell_asic * IC, float ** data);
 
-// void read_cell_voltages(uint8_t tIC, cell_asic *ic, float ** data);
+void read_cell_voltages(uint8_t tIC, cell_asic *ic, float ** data);
+
+bool check_cell_voltages(uint8_t tIC, cell_asic * IC, float ** data);
+
+void read_all_flags(uint8_t tIC, cell_asic * IC, uint8_t * data);
+
+bool check_all_flags();
 
 // void config_reg_init();
 
