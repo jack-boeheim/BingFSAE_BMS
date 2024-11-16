@@ -112,7 +112,27 @@ void charger_can_message(uint16_t maxChargeV, uint16_t maxChargeI, bool bChargeS
 }
 
 
+_Bool read_charger_can_message(float * pOutputVoltageV, float * pOutputCurrentA){
 
+    //Declare temporary message to receive data
+    CANMessage msg;
+
+    //If message received
+    if(can.read(msg)){
+        //Grab byte 1 and 2 of charger message MSB and LSB of output voltage respectively
+        //Multiply by .1V/Byte to convert to V
+        (*pOutputVoltageV) = ((msg.data[0] << 8) + msg.data[1])*0.1;
+
+        //Grab byte 3 and 4 of charger message MSB and LSB of output current respectively
+        //Multiply by .1A/Byte to convert to A
+        (*pOutputCurrentA) = ((msg.data[2] << 8) + msg.data[3])*0.1;
+        return 1;
+    }
+    //If message not received
+    else{
+        return 0;
+    }
+}
 
 /*-----------------------------------------------------------------------------
  Get all BMS cell voltages stored in an array
