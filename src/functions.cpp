@@ -76,20 +76,20 @@ void voltage_can_message(uint16_t test_IV, uint16_t test_res, uint16_t test_OCV)
     for (int i = 0; i < NUM_MODULES;  ++i){
         for(int j = 0; j < NUM_CELLS; ++j){
 
-                can_v_msg.data[0] = 12*i + j; //Cell ID
-                can_v_msg.data[1] = ((test_IV >> 8) & 0xFF); //8 MSB of InstantaneousCell Voltage 
-                can_v_msg.data[2] = (test_IV & 0xFF); //8 LSB of Instantaneous Cell Voltage 
-                can_v_msg.data[3] = ((test_res >> 8) & 0xFF); //8 MSB of Internal Resistance  (placeholder 0 for now)
-                can_v_msg.data[4] = (test_res & 0xFF); //8 LSB of Internal Resistance  (placeholder 0 for now)
-                can_v_msg.data[5] = ((test_OCV >> 8) & 0xFF); //8 MSB of Open Circuit Voltage (placeholder 0 for now)
-                can_v_msg.data[6] = (test_OCV & 0xFF); //8 LSB of Open Circuit Voltage (placeholder 0 for now)
-                can_v_msg.data[7] = (((CAN_CELL_V_ID + 8 + can_v_msg.data[0] + can_v_msg.data[1] + 
-                can_v_msg.data[2] + can_v_msg.data[3] + can_v_msg.data[4] + 
-                can_v_msg.data[5] + can_v_msg.data[6]) >> 8) & 0xFF); //Checksum (used same process as Orion)
-                can.write(can_v_msg);  
-                Delay_ms(1);
+            can_v_msg.data[0] = 12*i + j; //Cell ID
+            can_v_msg.data[1] = ((test_IV >> 8) & 0xFF); //8 MSB of InstantaneousCell Voltage 
+            can_v_msg.data[2] = (test_IV & 0xFF); //8 LSB of Instantaneous Cell Voltage 
+            can_v_msg.data[3] = ((test_res >> 8) & 0xFF); //8 MSB of Internal Resistance  (placeholder 0 for now)
+            can_v_msg.data[4] = (test_res & 0xFF); //8 LSB of Internal Resistance  (placeholder 0 for now)
+            can_v_msg.data[5] = ((test_OCV >> 8) & 0xFF); //8 MSB of Open Circuit Voltage (placeholder 0 for now)
+            can_v_msg.data[6] = (test_OCV & 0xFF); //8 LSB of Open Circuit Voltage (placeholder 0 for now)
+            can_v_msg.data[7] = (((CAN_CELL_V_ID + 8 + can_v_msg.data[0] + can_v_msg.data[1] + 
+            can_v_msg.data[2] + can_v_msg.data[3] + can_v_msg.data[4] + 
+            can_v_msg.data[5] + can_v_msg.data[6]) >> 8) & 0xFF); //Checksum (used same process as Orion)
+
+            can.write(can_v_msg);
         } 
-            
+              
     }
 }
 
@@ -112,7 +112,27 @@ void charger_can_message(uint16_t maxChargeV, uint16_t maxChargeI, bool bChargeS
 }
 
 
+_Bool read_charger_can_message(float * pOutputVoltageV, float * pOutputCurrentA){
 
+    //Declare temporary message to receive data
+    CANMessage msg;
+
+    //If message received
+    if(can.read(msg)){
+        //Grab byte 1 and 2 of charger message MSB and LSB of output voltage respectively
+        //Multiply by .1V/Byte to convert to V
+        (*pOutputVoltageV) = ((msg.data[0] << 8) + msg.data[1])*0.1;
+
+        //Grab byte 3 and 4 of charger message MSB and LSB of output current respectively
+        //Multiply by .1A/Byte to convert to A
+        (*pOutputCurrentA) = ((msg.data[2] << 8) + msg.data[3])*0.1;
+        return 1;
+    }
+    //If message not received
+    else{
+        return 0;
+    }
+}
 
 /*-----------------------------------------------------------------------------
  Get all BMS cell voltages stored in an array
