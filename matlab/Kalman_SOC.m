@@ -2,10 +2,10 @@ clc
 clear
 close all 
 %%Setup/Define Model Parameters
-load("soc_ocv_data.mat"); %Voltages are Termial voltages from 1C discharge, need to re-factor
+load("soc_ocv_data.mat"); 
 SOC = SOC/100;
 R_0 = 32e-3; %Internal Resistance Per Manufacturer
-OCV = OCV + R_0*3;
+OCV = OCV + R_0*3; %Voltage/SOC curve provided gives terminal voltages at 1C. Approximate OCV = V_t + R_0*I
 load("discharge_data.mat");
 dt = zeros(size(data,1),1);
 
@@ -33,7 +33,7 @@ R = diag([1000*Q;Q;0.1*Q]); %Process Covariance
 
 x_predict = zeros(3,size(data,1));
 x_update = zeros(3,size(data,1));
-x = [.1; 0; 0]; %Initial State Vector
+x = [100; 0; 0]; %Initial State Vector
 SOC_0 = 1;
 
 Sigma = eye(3); %Initial State Uncertainty
@@ -62,8 +62,12 @@ end
 
 SOCs_CC = SOC_0 + cumtrapz(data.time_s,data.I_mA)/(Q_nom*3600*1000);
 figure;
+
+SOCs_Kalman = kalmanSOC(OCV_SOC,R_0,R_1,tau_1,R_2,tau_2,Q_nom,data); 
+
 plot(data.time_s - data.time_s(1), SOCs_Kalman);
 figure;
 plot(data.time_s - data.time_s(1), SOCs_CC);
 figure; 
 plot(data.time_s - data.time_s(1),data.I_mA);
+
