@@ -6,7 +6,7 @@ function SOCs = kalmanSOC(OCV_SOC,R_0,R_1,tau_1,R_2,tau_2,Q_nom,data)
 
 %x_predict = zeros(3,size(data,1));
 %x_update = zeros(3,size(data,1));
-x = [0; 0; 0]; %Initial State Vector
+x = [0.5; 0.1; 0.1]; %Initial State Vector
 %SOC_0 = 1;
 Sigma = eye(3); %Initial State Uncertainty
 SOCs = zeros(size(data,1),1);

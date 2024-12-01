@@ -45,4 +45,17 @@ SOCs_CC = 100*(SOC_0 + cumtrapz(data.time_s,data.I_mA)/(Q_nom*3600*1000));
 plot(data.time_s - data.time_s(1),SOCs_CC);
 legend('Kalman Filter','Coloumb Counting');
 xlabel('Time (s)');
-ylabel('State of Charge (%)')
+ylabel('State of Charge (%)');
+
+
+load('charge_discharge_data.mat'); 
+SOCs_Kalman_Charge_Discharge = 100*(kalmanSOC(OCV_SOC,R_0,R_1,tau_1,R_2,tau_2,Q_nom,data)); 
+figure;
+plot(data.time_s - data.time_s(1),SOCs_Kalman_Charge_Discharge);
+hold on 
+SOC_0 = 1; %Approximate (initial SOC not stated in data)
+SOCs_CC = 100*(SOC_0 + cumtrapz(data.time_s,data.I_mA)/(Q_nom*3600*1000));
+plot(data.time_s - data.time_s(1),SOCs_CC);
+legend('Kalman Filter','Coloumb Counting');
+xlabel('Time (s)');
+ylabel('State of Charge (%)');
