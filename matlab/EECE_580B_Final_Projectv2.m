@@ -5,7 +5,7 @@ close all
 %% Setup Model Parameters
 %Constants 
 Q_nom = 2.9;
-N_zp = 100;
+N_zp = 10e3;
 %SOC/OCV
 SOC = [1; 0.95; 0.9; 0.8; 0.7; 0.6; 0.5; 0.4; 0.3; 0.25; 0.2; 0.15; 0.1; 0.05];
 OCV = [4.17497; 4.1042; 4.05852; 3.94657; 3.86229; 3.76835; 3.66348; 3.60236; 3.55024; 3.51292; 3.45824; 3.39068; 3.34436; 3.23691];
@@ -44,62 +44,53 @@ cov_ecm_params(:,:,5) = diag([.0189;.0185;17.15125;.0240;431.6995])^2;
 
 %% Parameter Estimation via EKF 
 
-load('HPPC_pulse_data_30.mat');
-mVoltage = data.Voltage; mCurrent = data.Current; t = data.Time;
-x = [0.1;0;0];
-SOCs_Kalman_Dischage = kalmanSOC1(OCV_SOC,R_0s,R_1s,tau_1s,R_2s,tau_2s,Q_nom,mVoltage,mCurrent,t,cov_ecm_params,x); 
-figure;
-plot(data.Time - data.Time(1), SOCs_Kalman_Dischage*100,'LineWidth',3);
-SOC_0 = .3;
-SOCs_CC = 100*(SOC_0 + cumtrapz(data.Time,data.Current)/(Q_nom*3600));
-hold on
-plot(data.Time - data.Time(1),SOCs_CC,'LineWidth',3);
-legend('Kalman Filter','True SOC');
-xlabel('Time (s)');
-ylabel('State of Charge (%)');
-
-
+%Report Figure 3.2.3
 load('03-18-17_02.17 25degC_Cycle_1_Pan18650PF.mat');
 mVoltage = meas.Voltage(1:1e5,1); mCurrent = meas.Current(1:1e5,1); t = meas.Time(1:1e5,1);
-x = [0.4;0;0];
+mVoltage = [mVoltage(1)*ones(N_zp,1); mVoltage]; mCurrent = [zeros(N_zp,1); mCurrent]; t = [(0:0.01:(0.01*N_zp -0.01)).';t + (0.01*N_zp -0.01)];
+x = [0.1;0;0];
 SOCs_Kalman_C1 = kalmanSOC1(OCV_SOC,R_0s,R_1s,tau_1s,R_2s,tau_2s,Q_nom,mVoltage,mCurrent,t,cov_ecm_params,x); 
-
 figure;
-plot(t - t(1), SOCs_Kalman_C1*100,'LineWidth',3);
-SOC_0 = 1;
+plot(t - t(1), SOCs_Kalman_C1*100,'LineStyle','--','LineWidth',2,'MarkerIndices',1:50:size(t,1));
+xlim([0 1e4]);
+grid on;
+SOC_0 = 0.95;
 SOCs_CC = 100*(SOC_0 + cumtrapz(t,mCurrent)/(Q_nom*3600));
 hold on
-plot(t -t(1),SOCs_CC,'LineWidth',3);
+plot(t -t(1),SOCs_CC,'LineWidth',1);
 legend('Kalman Filter','True SOC');
 xlabel('Time (s)');
 ylabel('State of Charge (%)');
 title("Variable Discharge");
 
+%Report Figure 3.2.1
 load('07-22-17_22.44 4020_Dis1C_1.mat');
 mVoltage = meas.Voltage; mCurrent = meas.Current; t = meas.Time;
-x = [0.5;0;0];
-SOCs_Kalman_C2 = kalmanSOC1(OCV_SOC,R_0s,R_1s,tau_1s,R_2s,tau_2s,Q_nom,mVoltage,mCurrent,t,cov_ecm_params,x); 
+mVoltage = [mVoltage(1)*ones(N_zp,1); mVoltage]; mCurrent = [zeros(N_zp,1); mCurrent]; t = [(0:0.01:(0.01*N_zp -0.01)).';t + (0.01*N_zp -0.01)];
+x = [0.1;0;0];
+SOCs_Kalman_C2 = kalmanSOC1(OCV_SOC,R_0s,R_1s,tau_1s,R_2s,tau_2s,Q_nom,mVoltage,mCurrent,t,cov_ecm_params,x);
 figure;
-plot(t - t(1), SOCs_Kalman_C2*100,'LineWidth',3);
-SOC_0 = 0.9;
+plot(t - t(1),SOCs_Kalman_C2*100,'LineStyle','--','LineWidth',2)
+SOC_0 = 0.8;
 SOCs_CC = 100*(SOC_0 + cumtrapz(t,mCurrent)/(Q_nom*3600));
 hold on
-plot(t -t(1),SOCs_CC);
+plot(t -t(1),SOCs_CC,'LineWidth',1);
 legend('Kalman Filter','True SOC');
 xlabel('Time (s)');
 ylabel('State of Charge (%)');
 title('Constant Discharge 1C');
 
+%Report Figure 3.2.2
 load('03-21-17_06.44 3416_Charge3.mat');
 mVoltage = meas.Voltage; mCurrent = meas.Current; t = meas.Time;
-x = [1;0;0];
+x = [0.9;0;0];
 SOCs_Kalman_C2 = kalmanSOC1(OCV_SOC,R_0s,R_1s,tau_1s,R_2s,tau_2s,Q_nom,mVoltage,mCurrent,t,cov_ecm_params,x); 
 figure;
-plot(t - t(1), SOCs_Kalman_C2*100,'LineWidth',3);
+plot(t - t(1),SOCs_Kalman_C2*100,'LineStyle','--','LineWidth',2)
 SOC_0 = 0.1;
 SOCs_CC = 100*(SOC_0 + cumtrapz(t,mCurrent)/(Q_nom*3600));
 hold on
-plot(t -t(1),SOCs_CC,'LineWidth',3);
+plot(t -t(1),SOCs_CC,'LineWidth',1);
 legend('Kalman Filter','True SOC');
 xlabel('Time (s)');
 ylabel('State of Charge (%)');
