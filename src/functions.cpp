@@ -13,6 +13,7 @@ extern DigitalIn driving;
 extern DigitalIn charging;
 extern DigitalIn shutdown_tap;
 extern DigitalOut fault;
+extern Timer canTimer;
 
 
 
@@ -74,7 +75,7 @@ void voltage_can_message(uint16_t test_IV, uint16_t test_res, uint16_t test_OCV)
    can_v_msg.type = CANData;        // Message type (data frame) 
    can_v_msg.len = 8;               // Set length to 8 bytes
     for (int i = 0; i < NUM_MODULES;  ++i){
-        for(int j = 0; j < NUM_CELLS; ++j){
+        for(int j = 0; j < NUM_CELLS_PER_MODULE; ++j){
 
             can_v_msg.data[0] = 12*i + j; //Cell ID
             can_v_msg.data[1] = ((test_IV >> 8) & 0xFF); //8 MSB of InstantaneousCell Voltage 
@@ -88,8 +89,8 @@ void voltage_can_message(uint16_t test_IV, uint16_t test_res, uint16_t test_OCV)
             can_v_msg.data[5] + can_v_msg.data[6]) >> 8) & 0xFF); //Checksum (used same process as Orion)
 
             can.write(can_v_msg);
+            Delay_ms(1);
         } 
-              
     }
 }
 

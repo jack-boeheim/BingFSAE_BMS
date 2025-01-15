@@ -44,15 +44,16 @@
 /*------------------------------------------
  Macros - CAN Msg IDs
 ------------------------------------------*/
-#define CAN_CELL_V_ID   0x001
+#define CAN_CELL_V_ID   0x36
 #define CAN_CHARGER_MSG_ID 0x1806E5F4
 
 
 /*------------------------------------------
  Macros - Other
 ------------------------------------------*/
-#define NUM_MODULES 1
-#define NUM_CELLS  12*NUM_MODULES
+#define NUM_MODULES 6
+#define NUM_CELLS  NUM_CELLS_PER_MODULE*NUM_MODULES
+#define NUM_CELLS_PER_MODULE 12
 #define TOTAL_IC NUM_MODULES
 
 /*------------------------------------------
@@ -89,7 +90,8 @@ void assert_fault_low();
 
 void voltage_can_message(uint16_t test_IV, uint16_t test_res, uint16_t test_OCV);
 
- _Bool read_charger_can_message(float * pOutputVoltageV, float * pOutputCurrentA);
+_Bool read_charger_can_message(float * pOutputVoltageV, float * pOutputCurrentA);
+
 // void get_cell_voltages(uint8_t tIC, cell_asic * IC, float ** data);
 
 // void read_cell_voltages(uint8_t tIC, cell_asic *ic, float ** data);
