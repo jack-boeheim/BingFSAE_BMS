@@ -88,7 +88,7 @@ void assert_fault_high();
 
 void assert_fault_low();
 
-void voltage_can_message(uint16_t test_IV, uint16_t test_res, uint16_t test_OCV);
+void voltage_can_message(cell_asic *IC);
 
 _Bool read_charger_can_message(float * pOutputVoltageV, float * pOutputCurrentA);
 

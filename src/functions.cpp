@@ -93,7 +93,6 @@ void voltage_can_message(cell_asic *IC) {
        
     }
 }
-}
 
 void charger_can_message(uint16_t maxChargeV, uint16_t maxChargeI, bool bChargeSafe){
    CANMessage can_charge_msg;
