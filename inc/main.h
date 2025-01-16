@@ -51,7 +51,7 @@
 /*------------------------------------------
  Macros - Other
 ------------------------------------------*/
-#define NUM_MODULES 6
+#define NUM_MODULES 1
 #define NUM_CELLS  NUM_CELLS_PER_MODULE*NUM_MODULES
 #define NUM_CELLS_PER_MODULE 12
 #define TOTAL_IC NUM_MODULES

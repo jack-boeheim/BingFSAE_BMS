@@ -38,14 +38,18 @@ cell_asic IC[NUM_MODULES];
 int main() {
 
     can.frequency(CAN_BAUD_RATE_CHARGE);
+    spi_init();
+    adBms6830_init_config(TOTAL_IC, &IC[0]);
 
-    uint16_t test_IV = 0xFFFF;
-    uint16_t test_res = 0x0FF0;
-    uint16_t test_OCV = 0xF00F;
+    adBms6830_write_config(TOTAL_IC, &IC[0]); 
+    adBms6830_start_adc_cell_voltage_measurment(TOTAL_IC);
+    adBms6830_start_adc_s_voltage_measurment(TOTAL_IC);
+    adBms6830_start_aux_voltage_measurment(TOTAL_IC, &IC[0]);
 
     while(1)
     {
-        voltage_can_message(test_IV, test_res, test_OCV);
+        measurement_loop();
+        voltage_can_message(&IC[0]);
     }
 
 
