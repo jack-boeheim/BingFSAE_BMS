@@ -7,12 +7,15 @@ import threading
 import datetime
 import time
 
+NUM_COLUMNS = 8
+NUM_ROWS = 12
+
 class SerialMonitor:
     def __init__(self, master):
         self.master = master
-        window_width = self.master.winfo_screenwidth()  # Use full screen width
-        window_height = self.master.winfo_screenheight()  # Use full screen height
-        self.master.geometry(f'{window_width}x{window_height}')  # Set the window to full screen
+        self.window_width = self.master.winfo_screenwidth()  # Use full screen width
+        self.window_height = self.master.winfo_screenheight()  # Use full screen height
+        self.master.geometry(f'{self.window_width}x{self.window_height}')  # Set the window to full screen
         self.master.title("Serial Monitor")
         self.master.state('zoomed')  # Open in maximized state
 
@@ -50,7 +53,7 @@ class SerialMonitor:
         self.export_txt_button.grid(row=0, column=5, padx=10, pady=10)
 
         # Scrolled Text Area for logs
-        self.log_text = scrolledtext.ScrolledText(self.master, wrap=tk.WORD, width=205, height=40)
+        self.log_text = scrolledtext.ScrolledText(self.master, wrap=tk.WORD, height=40, width = 150)
         self.log_text.grid(row=1, column=0, columnspan=18, padx=10, pady=10)
 
     def populate_ports(self):
@@ -74,9 +77,6 @@ class SerialMonitor:
             self.thread = threading.Thread(target=self.read_from_port)
             self.thread.start()
 
-            # Create Treeview Table to display data
-            self.create_treeview_table()
-
         except Exception as e:
             self.log_text.insert(tk.END, f"Error: {str(e)}\n")
 
@@ -89,17 +89,16 @@ class SerialMonitor:
         self.log_text.insert(tk.END, "Disconnected\n")
 
     def read_from_port(self):
-        columns = [f"Module {i}" for i in range(1, 9)]  # Define columns
+        columns = [f"Module {i + 1}" for i in range(NUM_COLUMNS)]  # Define columns
         self.tree = ttk.Treeview(self.master, columns=columns, show="headings")
-        self.tree.grid(row=1, column=0, columnspan=8, sticky="nsew", padx=10, pady=10)
+        self.tree.grid(row=1, column=0, columnspan=8, sticky="nsew")
 
         # Define columns
         for col in columns:
             self.tree.heading(col, text=col)
-            self.tree.column(col, stretch=True, anchor="center")  # Make columns stretchable
+            self.tree.column(col, stretch=False, anchor="center", width = int(self.window_width / NUM_COLUMNS))
 
-        rows, cols = 12, 8  # Define matrix size
-        self.matrix = [["NA"] * cols for _ in range(rows)]  # Initialize matrix
+        self.matrix = [["NA"] * NUM_COLUMNS for _ in range(NUM_ROWS)]  # Initialize matrix
 
         # Insert empty rows into the Treeview
         for row in self.matrix:
@@ -115,12 +114,12 @@ class SerialMonitor:
                     decimal_cell = int(hex_cell, 16)
 
                     # Calculate row and column indices
-                    row_index = decimal_cell // cols
-                    column_index = decimal_cell % cols
+                    row_index = decimal_cell % NUM_ROWS
+                    column_index = decimal_cell // NUM_ROWS
 
                     hex_voltage = data[data.find(phrase) + len(phrase) + 2: data.find(phrase) + len(phrase) + 6]
                     decimal_voltage = int(hex_voltage, 16)
-                    convert_to_volt = round(decimal_voltage * 0.0001, 3)
+                    convert_to_volt = round(((decimal_voltage + 10000) * .00015), 3)
 
                     # Update matrix and Treeview
                     if self.matrix[row_index][column_index] != convert_to_volt:
