@@ -33,7 +33,7 @@ and its licensor.
 */
 
 #define TOTAL_IC 1
-cell_asic IC[TOTAL_IC];
+extern cell_asic * IC;
 
 /* ADC Command Configurations */
 RD      REDUNDANT_MEASUREMENT           = RD_OFF;

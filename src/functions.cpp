@@ -6,7 +6,7 @@
 extern SPI spi; 
 extern CAN can;
 //extern Serial pc;
-extern cell_asic IC;
+extern cell_asic * IC;
 extern DigitalOut master;
 extern DigitalOut chip_select;
 extern DigitalIn driving;
