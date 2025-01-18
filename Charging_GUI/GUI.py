@@ -13,6 +13,13 @@ NUM_CELLS_PER_MODULE = 12
 NUM_COLUMNS = NUM_MODULES
 NUM_ROWS = NUM_CELLS_PER_MODULE
 
+INSTANTANEOUS_CELL_VOLTAGE = "Instantaneous Cell Voltage"
+INTERNAL_RESISTANCE = "Internal Resistance"
+OPEN_CIRCUIT_VOLTAGE = "Open Circuit Voltage"
+
+
+
+
 class SerialMonitor:
     def __init__(self, master):
         self.master = master
@@ -55,6 +62,13 @@ class SerialMonitor:
         self.export_txt_button = ttk.Button(self.master, text="Export as TXT", command=self.export_txt, state=tk.DISABLED)
         self.export_txt_button.grid(row=0, column=5, padx=10, pady=10)
 
+        self.meas_combobox_label = ttk.Label(self.master, text="Select Measurement Quantity:")
+        self.meas_combobox_label.grid(row=0, column=6, padx=10, pady=10)
+
+        self.meas_combobox = ttk.Combobox(self.master, values=[INSTANTANEOUS_CELL_VOLTAGE, INTERNAL_RESISTANCE, OPEN_CIRCUIT_VOLTAGE], state="readonly")
+        self.meas_combobox.set(INSTANTANEOUS_CELL_VOLTAGE)  # Default
+        self.meas_combobox.grid(row=0, column=7, padx=10, pady=10)
+
         # Scrolled Text Area for logs
         self.log_text = scrolledtext.ScrolledText(self.master, wrap=tk.WORD, height=40, width = 150)
         self.log_text.grid(row=1, column=0, columnspan=18, padx=10, pady=10)
@@ -91,6 +105,9 @@ class SerialMonitor:
         self.disconnect_button["state"] = tk.DISABLED
         self.log_text.insert(tk.END, "Disconnected\n")
 
+    def clear_matrix(self):
+        self.matrix = [["NA"] * NUM_COLUMNS for _ in range(NUM_ROWS)]
+
     def read_from_port(self):
         columns = [f"Module {i + 1}" for i in range(NUM_COLUMNS)]  # Define columns
         self.tree = ttk.Treeview(self.master, columns=columns, show="headings")
@@ -101,7 +118,7 @@ class SerialMonitor:
             self.tree.heading(col, text=col)
             self.tree.column(col, stretch=False, anchor="center", width = int(self.window_width / NUM_COLUMNS))
 
-        self.matrix = [["NA"] * NUM_COLUMNS for _ in range(NUM_ROWS)]  # Initialize matrix
+        self.clear_matrix()  # Initialize matrix
 
         # Insert empty rows into the Treeview
         for row in self.matrix:
@@ -110,6 +127,11 @@ class SerialMonitor:
         phrase = "t0368".encode()  # Marker phrase to look for in serial data
 
         while self.connection_active:
+            self.mode = self.meas_combobox.get()
+
+            if self.mode != self.prev_mode:
+                self.clear_matrix()
+
             if self.ser.in_waiting > 0: #If there are unread bytes
                 data = self.ser.read(self.ser.in_waiting)  # Read all available data
                 if phrase in data:
@@ -120,14 +142,30 @@ class SerialMonitor:
                     row_index = decimal_cell % NUM_ROWS
                     column_index = decimal_cell // NUM_ROWS
 
-                    hex_voltage = data[data.find(phrase) + len(phrase) + 2: data.find(phrase) + len(phrase) + 6]
-                    decimal_voltage = int(hex_voltage, 16)
-                    convert_to_volt = round(((decimal_voltage + 10000) * .00015), 3)
+                    if self.mode == INSTANTANEOUS_CELL_VOLTAGE:
+                        hex_icv = data[data.find(phrase) + len(phrase) + 2: data.find(phrase) + len(phrase) + 6]
+                        decimal_icv = int(hex_icv, 16)
+                        converted_icv = round(((decimal_icv + 10000) * .00015), 3)
+                        dipslayed_value = converted_icv
+                    elif self.mode == INTERNAL_RESISTANCE:
+                        hex_res = data[data.find(phrase) + len(phrase) + 6: data.find(phrase) + len(phrase) + 10]
+                        decimal_res = int(hex_res, 16)
+                        #Need proper conversion
+                        converted_res = decimal_res
+                        dipslayed_value = converted_res
+                    elif self.mode == OPEN_CIRCUIT_VOLTAGE:
+                        hex_ocv = data[data.find(phrase) + len(phrase) + 10: data.find(phrase) + len(phrase) + 14]
+                        decimal_ocv = int(hex_ocv, 16)
+                        #Need proper conversion
+                        converted_ocv = decimal_ocv
+                        dipslayed_value = converted_ocv
 
                     # Update matrix and Treeview
-                    if self.matrix[row_index][column_index] != convert_to_volt:
-                        self.matrix[row_index][column_index] = convert_to_volt
+                    if self.matrix[row_index][column_index] != dipslayed_value:
+                        self.matrix[row_index][column_index] = dipslayed_value
                         self.update_cell(row_index, self.matrix[row_index])
+
+            self.prev_mode = self.mode
 
             time.sleep(0.01)  # Small delay to reduce CPU usage
 
