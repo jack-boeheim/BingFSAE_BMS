@@ -60,11 +60,11 @@ bool is_shutdown_closed(){
     return shutdown_tap.read();
 }
 
-void assert_fault_high(){
+void set_fault_high(){
     fault = 1;
 }
 
-void assert_fault_low(){
+void set_fault_low(){
     fault = 0;
 }
 
@@ -75,7 +75,7 @@ void voltage_can_message(cell_asic *IC) {
    can_v_msg.type = CANData;        // Message type (data frame) 
    can_v_msg.len = 8;               // Set length to 8 bytes
     for (int i = 0; i < NUM_MODULES;  ++i){
-        for(int j = 0; j < NUM_CELLS; ++j){
+        for(int j = 0; j < NUM_CELL_PER_MODULE; ++j){
 
                 can_v_msg.data[0] = 12*i + j; //Cell ID
                 can_v_msg.data[1] = ((IC[i].cell.c_codes[j] >> 8) & 0xFF); //8 MSB of InstantaneousCell Voltage 
