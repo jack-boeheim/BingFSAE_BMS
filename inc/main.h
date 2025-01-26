@@ -44,7 +44,7 @@
 /*------------------------------------------
  Macros - CAN Msg IDs
 ------------------------------------------*/
-#define CAN_CELL_V_ID   0x01
+#define CAN_CELL_V_ID   0x36
 #define CAN_CHARGER_MSG_ID 0x1806E5F4
 
 
@@ -52,7 +52,8 @@
  Macros - Other
 ------------------------------------------*/
 #define NUM_MODULES 1
-#define NUM_CELLS  12*NUM_MODULES
+#define NUM_CELL_PER_MODULE 12
+#define NUM_CELLS  NUM_CELL_PER_MODULE*NUM_MODULES
 #define TOTAL_IC NUM_MODULES
 
 /*------------------------------------------

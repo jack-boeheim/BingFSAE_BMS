@@ -39,16 +39,14 @@ cell_asic IC[NUM_MODULES];
 int main() {
 
     while(1){
+        
         switch (FSM_state) {
             case (INIT):
 
                 fault = 1;
                 Delay_ms(1);
                 spi_init(); 
-                pc.printf("im in init\n");//testing 
-                // Send AWAKE message
-            //   can.write(CANMessage(0x00, "AWAKE", 5, CANData, CANStandard) );
-
+                pc.printf("im in init\n"); //testing 
                 // Check if Accumulator is in drive mode
                 if (is_driving() && !is_charging()) {
                     // Write config registers
@@ -87,18 +85,18 @@ int main() {
             
             case (DRIVE_MAIN): 
             
-            pc.printf("Running Drive Main Measurement Loop");
-            can.frequency(CAN_BAUD_RATE_DRIVE);
-            adBms6830_write_config(TOTAL_IC, &IC[0]); 
-            adBms6830_start_adc_cell_voltage_measurment(TOTAL_IC);
-            adBms6830_start_adc_s_voltage_measurment(TOTAL_IC);
-            adBms6830_start_aux_voltage_measurment(TOTAL_IC, &IC[0]);
+                pc.printf("Running Drive Main Measurement Loop");
+                can.frequency(CAN_BAUD_RATE_DRIVE);
+                adBms6830_write_config(TOTAL_IC, &IC[0]); 
+                adBms6830_start_adc_cell_voltage_measurment(TOTAL_IC);
+                adBms6830_start_adc_s_voltage_measurment(TOTAL_IC);
+                adBms6830_start_aux_voltage_measurment(TOTAL_IC, &IC[0]);
 
                 while(is_shutdown_closed()){
                 measurement_loop();
                 voltage_can_message(&IC[0]);
                 Delay_ms(10);
-                }
+            }
                 
                 FSM_state = FAULT;
                 
