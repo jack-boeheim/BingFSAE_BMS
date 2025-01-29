@@ -88,7 +88,7 @@ void assert_fault_high();
 
 void assert_fault_low();
 
-void voltage_can_message(cell_asic *IC);
+void voltage_can_message(cell_asic *IC,CANMessage *pCan_v_msg);
 
 // void get_cell_voltages(uint8_t tIC, cell_asic * IC, float ** data);
 

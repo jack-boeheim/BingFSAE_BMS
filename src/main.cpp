@@ -9,8 +9,6 @@ DigitalIn driving(PIN_DRIVING);
 DigitalIn charging(PIN_CHARGING);
 DigitalIn shutdown_tap(PIN_SHUTDOWN);
 DigitalOut fault(PIN_FAULT);
-
-
 DigitalOut master(MASTER_ENABLE);
 DigitalOut chip_select(PIN_SPI_CS); // SPI chip select
 DigitalOut mosi(PIN_SPI_MOSI);      // SPI MOSI
@@ -25,10 +23,9 @@ CAN can(PB_8, PB_9);
 
 //Configure Serial Communication for Debug 
 Serial pc(USBTX, USBRX);                    
-
 Timer timer;
 state_t FSM_state = INIT;
-// assert_fault_high();
+CANMessage can_v_msg, can_stat_msg;
 float cell_voltages[NUM_MODULES][NUM_CELLS];
 cell_asic IC[NUM_MODULES];
 
@@ -51,7 +48,6 @@ int main() {
                 if (is_driving() && !is_charging()) {
                     // Write config registers
                     adBms6830_init_config(TOTAL_IC, &IC[0]);
-
                     // Check current sensor (use same method as ECU code to cook value)
                     // Check battery cell voltage (run reading and check OV/UV flag & others)
                     // read_cell_voltages(1, &IC[0], );
@@ -94,7 +90,7 @@ int main() {
 
                 while(is_shutdown_closed()){
                 measurement_loop();
-                voltage_can_message(&IC[0]);
+                voltage_can_message(&IC[0],&can_v_msg);
                 Delay_ms(10);
             }
                 
@@ -111,7 +107,7 @@ int main() {
                 
                 can.frequency(CAN_BAUD_RATE_CHARGE);
                 measurement_loop();
-                voltage_can_message(&IC[0]);
+                voltage_can_message(&IC[0],&can_v_msg);
                 break;
             
             case (FAULT):

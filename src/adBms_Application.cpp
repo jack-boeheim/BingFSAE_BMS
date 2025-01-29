@@ -63,8 +63,8 @@ LOOP_MEASURMENT MEASURE_AVG_CELL        = DISABLED;        /*   This is ENABLED 
 LOOP_MEASURMENT MEASURE_F_CELL          = DISABLED;        /*   This is ENABLED or DISABLED       */
 LOOP_MEASURMENT MEASURE_S_VOLTAGE       = ENABLED;        /*   This is ENABLED or DISABLED       */
 LOOP_MEASURMENT MEASURE_AUX             = ENABLED;        /*   This is ENABLED or DISABLED       */
-LOOP_MEASURMENT MEASURE_RAUX            = DISABLED;        /*   This is ENABLED or DISABLED       */
-LOOP_MEASURMENT MEASURE_STAT            = DISABLED;        /*   This is ENABLED or DISABLED       */
+LOOP_MEASURMENT MEASURE_RAUX            = ENABLED;        /*   This is ENABLED or DISABLED       */
+LOOP_MEASURMENT MEASURE_STAT            = ENABLED;        /*   This is ENABLED or DISABLED       */
 
 void app_main()
 {
