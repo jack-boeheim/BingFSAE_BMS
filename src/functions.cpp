@@ -2,6 +2,7 @@
 #include "adBms_Application.h"
 #include "serialPrintResult.h"
 #include "mcuWrapper.h"
+#include <cstdint>
 
 extern SPI spi; 
 extern CAN can;
@@ -58,17 +59,33 @@ void set_fault_high(){fault = 1;}
 
 void set_fault_low(){fault = 0;}
 
-/*
-bool check_module_flags(cell_asic *IC){
 
+bool check_OV_UV_flags(cell_asic *IC, uint16_t *pCellErrorBuf){
 /*
     
-    Flags Fetched from measurement_loop function and stored in IC[].statc.(flag_type),
-    Need to Determine which flags are important to check per SAE regulations (OV,UV, Overtemp)
-    Pass in errorBuf and write to it with specific code depending on error
+    Flags Fetched from measurement_loop function and stored in IC[].statcd.
+    This will work for now but can be made more efficient by check the flag directly
+    as it is read in so the data is not looped over twice 
+    (will require editiing of adBms6830ParseStatusD in adBmsParseCreate.cpp)
+
+
 */
-    
+   uint8_t errorCnt = 0;
 
+    for(int i = 0; i < NUM_MODULES; ++i){
+        for(int j = 0; j < NUM_CELL_PER_MODULE; ++j){
+            if(IC[i].statd.c_ov[j]){
+                pCellErrorBuf[i] |= (1<<j);
+                errorCnt++;
+            }
+            else if(IC[i].statd.c_uv[j]){
+                 pCellErrorBuf[i] |= (1<<j);
+                 errorCnt++;
+            }
+        }
+    }
+    return errorCnt > 0;
+}
 
 
 

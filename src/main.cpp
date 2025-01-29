@@ -27,6 +27,7 @@ Timer timer;
 state_t FSM_state = INIT;
 CANMessage can_v_msg, can_stat_msg;
 float cell_voltages[NUM_MODULES][NUM_CELLS];
+uint16_t CellErrorBuf[NUM_MODULES];
 cell_asic IC[NUM_MODULES];
 
 
@@ -89,10 +90,13 @@ int main() {
                 adBms6830_start_aux_voltage_measurment(TOTAL_IC, &IC[0]);
 
                 while(is_shutdown_closed()){
-                measurement_loop();
-                voltage_can_message(&IC[0],&can_v_msg);
-                Delay_ms(10);
-            }
+                    measurement_loop();
+                    voltage_can_message(&IC[0],&can_v_msg);
+                    if(check_OV_UV_flags(&IC[0],&CellErrorBuf[0]))
+                    {FSM_state = FAULT;}
+                    
+                    Delay_ms(10);
+                }
                 
                 FSM_state = FAULT;
                 
