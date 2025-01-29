@@ -75,7 +75,7 @@ bool check_OV_UV_flags(cell_asic *IC, uint16_t *pCellErrorBuf){
     for(int i = 0; i < NUM_MODULES; ++i){
         for(int j = 0; j < NUM_CELL_PER_MODULE; ++j){
             if(IC[i].statd.c_ov[j]){
-                pCellErrorBuf[i] |= (1<<j);
+                pCellErrorBuf[i] |= (1<<j); //Ecode Problem Cell as One-Hot w/ Cell Location in module
                 errorCnt++;
             }
             else if(IC[i].statd.c_uv[j]){
