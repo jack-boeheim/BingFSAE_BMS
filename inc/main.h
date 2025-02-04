@@ -17,6 +17,8 @@
 ------------------------------------------*/
 #include "adbms_main.h"
 
+
+
 /*------------------------------------------
  Macros - Pins (Pin Defs to change according to Board Design)
 ------------------------------------------*/
@@ -27,7 +29,6 @@
 #define PIN_SPI_MISO    D12
 #define SPI_BITS        8
 #define SPI_MODE        0 // CPOL - CPHA = 0 (0 - 0 = 0)
-
 #define PIN_DRIVING     D14
 #define PIN_CHARGING    D15
 #define PIN_FAULT       D0

@@ -24,8 +24,10 @@ CAN can(PB_8, PB_9);
 //Configure Serial Communication for Debug 
 Serial pc(USBTX, USBRX);                    
 Timer timer;
+
+//Variable Declarations 
 state_t FSM_state = INIT;
-CANMessage can_v_msg, can_stat_msg;
+CANMessage can_msg;
 float cell_voltages[NUM_MODULES][NUM_CELLS];
 uint16_t CellErrorBuf[NUM_MODULES];
 cell_asic IC[NUM_MODULES];
@@ -91,7 +93,7 @@ int main() {
 
                 while(is_shutdown_closed()){
                     measurement_loop();
-                    voltage_can_message(&IC[0],&can_v_msg);
+                    voltage_can_message(&IC[0],&can_msg);
                     if(check_OV_UV_flags(&IC[0],&CellErrorBuf[0]))
                     {FSM_state = FAULT;}
                     
@@ -111,7 +113,7 @@ int main() {
                 
                 can.frequency(CAN_BAUD_RATE_CHARGE);
                 measurement_loop();
-                voltage_can_message(&IC[0],&can_v_msg);
+                voltage_can_message(&IC[0],&can_msg);
                 break;
             
             case (FAULT):
