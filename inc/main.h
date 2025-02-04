@@ -32,7 +32,7 @@
 #define PIN_DRIVING     D14
 #define PIN_CHARGING    D15
 #define PIN_FAULT       D0
-#define PIN_SHUTDOWN    PG_11 
+#define PIN_SHUTDOWN    PA_0 
 
 /*------------------------------------------
  Macros - Communication Rates
@@ -45,6 +45,7 @@
 /*------------------------------------------
  Macros - CAN Msg IDs
 ------------------------------------------*/
+#define CAN_CELL_V_ID   0x36
 #define CAN_CELL_V_ID   0x36
 #define CAN_CHARGER_MSG_ID 0x1806E5F4
 
@@ -92,6 +93,8 @@ void assert_fault_low();
 void voltage_can_message(cell_asic *IC,CANMessage *pCan_v_msg);
 
 bool check_OV_UV_flags(cell_asic *IC, uint16_t * pCellErrorBuf);
+
+_Bool read_charger_can_message(float * pOutputVoltageV, float * pOutputCurrentA);
 
 // void get_cell_voltages(uint8_t tIC, cell_asic * IC, float ** data);
 
