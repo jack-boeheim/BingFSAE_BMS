@@ -23,6 +23,9 @@ SPI spi(PIN_SPI_MOSI, PIN_SPI_MISO, PIN_SPI_SCLK);
 CAN can(PB_8, PB_9);
 
 //Configure Serial Communication for Debug 
+
+// Serial pc(USBTX, USBRX);                    
+
 //Serial pc(USBTX, USBRX);                    
 
 Timer timer;

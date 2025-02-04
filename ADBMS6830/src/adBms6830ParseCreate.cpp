@@ -389,8 +389,8 @@ void adBms6830ParseCell(uint8_t tIC, cell_asic *ic, GRP grp, uint8_t *cv_data)
   data = (uint8_t *)calloc(data_size, sizeof(uint8_t));
   if(data == NULL)
   {
-    #ifdef MBED
-    printf(" Failed to allocate parse cell memory \n");
+    #ifdef MBED5
+    pc.printf(" Failed to allocate parse cell memory \n");
     #else
     printf(" Failed to allocate parse cell memory \n");
     #endif
@@ -491,8 +491,8 @@ void adBms6830ParseAverageCell(uint8_t tIC, cell_asic *ic, GRP grp, uint8_t *acv
   data = (uint8_t *)calloc(data_size, sizeof(uint8_t));
   if(data == NULL)
   {
-    #ifdef MBED
-    printf(" Failed to allocate parse avg cell memory \n");
+    #ifdef MBED5
+    pc.printf(" Failed to allocate parse avg cell memory \n");
     #else
     printf(" Failed to allocate parse avg cell memory \n");
     #endif
@@ -594,8 +594,8 @@ void adBms6830ParseSCell(uint8_t tIC, cell_asic *ic, GRP grp, uint8_t *scv_data)
   data = (uint8_t *)calloc(data_size, sizeof(uint8_t));
   if(data == NULL)
   {
-    #ifdef MBED
-    printf(" Failed to allocate parse scv memory \n");
+    #ifdef MBED5
+    pc.printf(" Failed to allocate parse scv memory \n");
     #else
     printf(" Failed to allocate parse scv memory \n");
     #endif
@@ -696,8 +696,8 @@ void adBms6830ParseFCell(uint8_t tIC, cell_asic *ic, GRP grp, uint8_t *fcv_data)
   data = (uint8_t *)calloc(data_size, sizeof(uint8_t));
   if(data == NULL)
   {
-    #ifdef MBED
-    printf(" Failed to allocate parse fcell memory \n");
+    #ifdef MBED5
+    pc.printf(" Failed to allocate parse fcell memory \n");
     #else
     printf(" Failed to allocate parse fcell memory \n");
     #endif
@@ -798,8 +798,8 @@ void adBms6830ParseAux(uint8_t tIC, cell_asic *ic, GRP grp, uint8_t *aux_data)
   data = (uint8_t *)calloc(data_size, sizeof(uint8_t));
   if(data == NULL)
   {
-    #ifdef MBED
-    printf(" Failed to allocate parse aux memory \n");
+    #ifdef MBED5
+    pc.printf(" Failed to allocate parse aux memory \n");
     #else
     printf(" Failed to allocate parse aux memory \n");
     #endif
@@ -886,8 +886,8 @@ void adBms6830ParseRAux(uint8_t tIC, cell_asic *ic, GRP grp, uint8_t *raux_data)
   data = (uint8_t *)calloc(data_size, sizeof(uint8_t));
   if(data == NULL)
   {
-    #ifdef MBED
-    printf(" Failed to allocate parse raux memory \n");
+    #ifdef MBED5
+    pc.printf(" Failed to allocate parse raux memory \n");
     #else
     printf(" Failed to allocate parse raux memory \n");
     #endif
