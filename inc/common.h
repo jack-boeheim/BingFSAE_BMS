@@ -18,7 +18,9 @@ and its licensor.
 #include <string.h>
 #include <stdbool.h>
 
-#define MBED /* Switch between IAR Workbench or Mbed Studio. */
+#define MBED  /* Switch between IAR Workbench or Mbed Studio. */
+#define MBED5 /* Define for use with MBED5 (Nucleo F207GZ), otherwise comment out for MBED6 (Nucleo G474RE) */
+
 
 #ifdef MBED
 #include "mbed.h"

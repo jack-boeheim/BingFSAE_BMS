@@ -27,7 +27,7 @@ Timer timer;
 
 //Variable Declarations 
 state_t FSM_state = INIT;
-CANMessage can_msg;
+CANMessage can_msg_rx, can_msg_tx;
 float cell_voltages[NUM_MODULES][NUM_CELLS];
 uint16_t CellErrorBuf[NUM_MODULES];
 cell_asic IC[NUM_MODULES];
@@ -46,7 +46,7 @@ int main() {
                 fault = 1;
                 Delay_ms(1);
                 spi_init(); 
-                pc.printf("im in init\n"); //testing 
+                pc.printf("In init\n"); //testing 
                 // Check if Accumulator is in drive mode
                 if (is_driving() && !is_charging()) {
                     // Write config registers
@@ -93,7 +93,7 @@ int main() {
 
                 while(is_shutdown_closed()){
                     measurement_loop();
-                    voltage_can_message(&IC[0],&can_msg);
+                    voltage_can_message(&IC[0],&can_msg_tx);
                     if(check_OV_UV_flags(&IC[0],&CellErrorBuf[0]))
                     {FSM_state = FAULT;}
                     
@@ -113,7 +113,7 @@ int main() {
                 
                 can.frequency(CAN_BAUD_RATE_CHARGE);
                 measurement_loop();
-                voltage_can_message(&IC[0],&can_msg);
+                voltage_can_message(&IC[0],&can_msg_tx);
                 break;
             
             case (FAULT):

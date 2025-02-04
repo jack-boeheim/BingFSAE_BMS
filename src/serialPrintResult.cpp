@@ -19,7 +19,7 @@ and its licensor.
 #include "common.h"
 #include "serialPrintResult.h"
 
-#ifdef MBED
+#ifdef MBED5
 extern Serial pc;
 /**
  *******************************************************************************
