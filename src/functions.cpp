@@ -5,14 +5,11 @@
 #include <cstdint>
 
 #ifdef MBED5 
-
 extern Serial pc;
-
 #endif 
 
 extern SPI spi; 
 extern CAN can;
-extern Serial pc;
 extern cell_asic IC;
 extern DigitalOut master;
 extern DigitalOut chip_select;
@@ -94,33 +91,34 @@ bool check_OV_UV_flags(cell_asic *IC, uint16_t *pCellErrorBuf){
     return errorCnt > 0;
 }
 
+void voltage_can_message(cell_asic *IC) {
 
-
-void voltage_can_message(cell_asic *IC, CANMessage *pCan_v_msg) {
-   // CANMessage can_v_msg;
-   pCan_v_msg->id = CAN_CELL_V_ID;    // Set CAN ID 
-   pCan_v_msg->format = CANStandard;  // Use standard CAN format (11-bit ID)
-   pCan_v_msg->type = CANData;        // Message type (data frame) 
-   pCan_v_msg->len = 8;               // Set length to 8 bytes
+   CANMessage can_v_msg;
+   can_v_msg.id = CAN_CELL_V_ID;    // Set CAN ID 
+   can_v_msg.format = CANStandard;  // Use standard CAN format (11-bit ID)
+   can_v_msg.type = CANData;        // Message type (data frame) 
+   can_v_msg.len = 8;               // Set length to 8 bytes
     for (int i = 0; i < NUM_MODULES;  ++i){
         for(int j = 0; j < NUM_CELL_PER_MODULE; ++j){
-
-                pCan_v_msg->data[0] = 12*i + j; //Cell ID
-                pCan_v_msg->data[1] = ((IC[i].cell.c_codes[j] >> 8) & 0xFF); //8 MSB of InstantaneousCell Voltage 
-                pCan_v_msg->data[2] = (IC[i].cell.c_codes[j] & 0xFF); //8 LSB of Instantaneous Cell Voltage 
-                pCan_v_msg->data[3] = 0; //8 MSB of Internal Resistance  (placeholder 0 for now)
-                pCan_v_msg->data[4] = 0; //8 LSB of Internal Resistance  (placeholder 0 for now)
-                pCan_v_msg->data[5] = 0; //8 MSB of Open Circuit Voltage (placeholder 0 for now)
-                pCan_v_msg->data[6] = 0; //8 LSB of Open Circuit Voltage (placeholder 0 for now)
-                pCan_v_msg->data[7] = (((CAN_CELL_V_ID + 8 + pCan_v_msg->data[0] + pCan_v_msg->data[1] + 
-                pCan_v_msg->data[2] + pCan_v_msg->data[3] + pCan_v_msg->data[4] + 
-                pCan_v_msg->data[5] + pCan_v_msg->data[6]) >> 8) & 0xFF); //Checksum (used same process as Orion)
-                can.write(*pCan_v_msg);      
+                can_v_msg.data[0] = 12*i + j; //Cell ID
+                can_v_msg.data[1] = ((IC[i].cell.c_codes[j] >> 8) & 0xFF); //8 MSB of InstantaneousCell Voltage 
+                can_v_msg.data[2] = (IC[i].cell.c_codes[j] & 0xFF); //8 LSB of Instantaneous Cell Voltage 
+                can_v_msg.data[3] = 0; //8 MSB of Internal Resistance  (placeholder 0 for now)
+                can_v_msg.data[4] = 0; //8 LSB of Internal Resistance  (placeholder 0 for now)
+                can_v_msg.data[5] = 0; //8 MSB of Open Circuit Voltage (placeholder 0 for now)
+                can_v_msg.data[6] = 0; //8 LSB of Open Circuit Voltage (placeholder 0 for now)
+                can_v_msg.data[7] = (((CAN_CELL_V_ID + 8 + can_v_msg.data[0] + can_v_msg.data[1] + 
+                can_v_msg.data[2] + can_v_msg.data[3] + can_v_msg.data[4] + 
+                can_v_msg.data[5] + can_v_msg.data[6]) >> 8) & 0xFF); //Checksum (used same process as Orion)
+                can.write(can_v_msg);      
                 Delay_ms(1);
         } 
        
     }
 }
+
+
+
 
 void charger_can_message(uint16_t maxChargeV, uint16_t maxChargeI, bool bChargeSafe){
    

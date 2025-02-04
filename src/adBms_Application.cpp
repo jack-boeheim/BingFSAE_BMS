@@ -24,13 +24,9 @@ and its licensor.
 #include "mcuWrapper.h"
 #include "main.h"
 
-<<<<<<< HEAD
-#ifdef MBED
-//extern Serial pc;
-=======
+
 #ifdef MBED5
 extern Serial pc;
->>>>>>> 276466f8529844e198f91a7e49e100792cbc9947
 #endif
 /**
 *******************************************************************************
@@ -78,15 +74,9 @@ void app_main()
   while(1)
   {
     int user_command;
-<<<<<<< HEAD
-#ifdef MBED
-    scanf("%d", &user_command);
-    printf("Enter cmd:%d\n", user_command);
-=======
 #ifdef MBED5
     pc.scanf("%d", &user_command);
     pc.printf("Enter cmd:%d\n", user_command);
->>>>>>> 276466f8529844e198f91a7e49e100792cbc9947
 #else
     scanf("%d", &user_command);
     printf("Enter cmd:%d\n", user_command);
@@ -206,13 +196,9 @@ void run_command(int cmd)
     break;
 
   default:
-<<<<<<< HEAD
-#ifdef MBED
-    printf("Incorrect Option\n\n");
-=======
+
 #ifdef MBED5
     pc.printf("Incorrect Option\n\n");
->>>>>>> 276466f8529844e198f91a7e49e100792cbc9947
 #else
     printf("Incorrect Option\n\n");
 #endif
@@ -303,13 +289,8 @@ void adBms6830_start_adc_cell_voltage_measurment(uint8_t tIC)
   adBmsWakeupIc(tIC);
   adBms6830_Adcv(REDUNDANT_MEASUREMENT, CONTINUOUS_MEASUREMENT, DISCHARGE_PERMITTED, RESET_FILTER, CELL_OPEN_WIRE_DETECTION);
   pladc_count = adBmsPollAdc(PLADC);
-<<<<<<< HEAD
-#ifdef MBED
-  printf("Cell conversion completed\n");
-=======
 #ifdef MBED5
-  pc.printf("Cell conversion completed\n");
->>>>>>> 276466f8529844e198f91a7e49e100792cbc9947
+  pc.printf("Cell conversion completed\n");7
 #else
   printf("Cell conversion completed\n");
 #endif
@@ -343,13 +324,8 @@ void adBms6830_start_adc_s_voltage_measurment(uint8_t tIC)
   adBmsWakeupIc(tIC);
   adBms6830_Adsv(CONTINUOUS_MEASUREMENT, DISCHARGE_PERMITTED, CELL_OPEN_WIRE_DETECTION);
   pladc_count = adBmsPollAdc(PLADC);
-<<<<<<< HEAD
-#ifdef MBED
-  printf("S-Voltage conversion completed\n");
-=======
 #ifdef MBED5
   pc.printf("S-Voltage conversion completed\n");
->>>>>>> 276466f8529844e198f91a7e49e100792cbc9947
 #else
   printf("S-Voltage conversion completed\n");
 #endif
@@ -383,13 +359,8 @@ void adBms6830_start_avgcell_voltage_measurment(uint8_t tIC)
   adBmsWakeupIc(tIC);
   adBms6830_Adcv(RD_ON, CONTINUOUS_MEASUREMENT, DISCHARGE_PERMITTED, RESET_FILTER, CELL_OPEN_WIRE_DETECTION);
   pladc_count = adBmsPollAdc(PLADC);
-<<<<<<< HEAD
-#ifdef MBED
-  printf("Avg Cell voltage conversion completed\n");
-=======
 #ifdef MBED5
   pc.printf("Avg Cell voltage conversion completed\n");
->>>>>>> 276466f8529844e198f91a7e49e100792cbc9947
 #else
   printf("Avg Cell voltage conversion completed\n");
 #endif
@@ -423,13 +394,8 @@ void adBms6830_start_fcell_voltage_measurment(uint8_t tIC)
   adBmsWakeupIc(tIC);
   adBms6830_Adcv(REDUNDANT_MEASUREMENT, CONTINUOUS_MEASUREMENT, DISCHARGE_PERMITTED, RESET_FILTER, CELL_OPEN_WIRE_DETECTION);
   pladc_count = adBmsPollAdc(PLADC);
-<<<<<<< HEAD
-#ifdef MBED
-  printf("F Cell voltage conversion completed\n");
-=======
 #ifdef MBED5
   pc.printf("F Cell voltage conversion completed\n");
->>>>>>> 276466f8529844e198f91a7e49e100792cbc9947
 #else
   printf("F Cell voltage conversion completed\n");
 #endif
@@ -470,13 +436,8 @@ void adBms6830_start_aux_voltage_measurment(uint8_t tIC, cell_asic *ic)
   adBmsWriteData(tIC, &ic[0], WRCFGA, Config, A);
   adBms6830_Adax(AUX_OPEN_WIRE_DETECTION, OPEN_WIRE_CURRENT_SOURCE, AUX_CH_TO_CONVERT);
   pladc_count = adBmsPollAdc(PLADC);
-<<<<<<< HEAD
-#ifdef MBED
-  printf("Aux voltage conversion completed\n");
-=======
 #ifdef MBED5
   pc.printf("Aux voltage conversion completed\n");
->>>>>>> 276466f8529844e198f91a7e49e100792cbc9947
 #else
   printf("Aux voltage conversion completed\n");
 #endif
@@ -515,13 +476,8 @@ void adBms6830_start_raux_voltage_measurment(uint8_t tIC,  cell_asic *ic)
   adBmsWriteData(tIC, &ic[0], WRCFGA, Config, A);
   adBms6830_Adax2(AUX_CH_TO_CONVERT);
   pladc_count = adBmsPollAdc(PLADC);
-<<<<<<< HEAD
-#ifdef MBED
-  printf("RAux voltage conversion completed\n");
-=======
 #ifdef MBED5
   pc.printf("RAux voltage conversion completed\n");
->>>>>>> 276466f8529844e198f91a7e49e100792cbc9947
 #else
   printf("RAux voltage conversion completed\n");
 #endif
@@ -661,10 +617,6 @@ void adBms6830_clear_cell_measurement(uint8_t tIC)
 {
   adBmsWakeupIc(tIC);
   spiSendCmd(CLRCELL);
-<<<<<<< HEAD
-#ifdef MBED
-  printf("Cell Registers Cleared\n\n");
-=======
 #ifdef MBED5
   pc.printf("Cell Registers Cleared\n\n");
 >>>>>>> 276466f8529844e198f91a7e49e100792cbc9947
@@ -682,13 +634,8 @@ void adBms6830_clear_aux_measurement(uint8_t tIC)
 {
   adBmsWakeupIc(tIC);
   spiSendCmd(CLRAUX);
-<<<<<<< HEAD
-#ifdef MBED
-  printf("Aux Registers Cleared\n\n");
-=======
 #ifdef MBED5
   pc.printf("Aux Registers Cleared\n\n");
->>>>>>> 276466f8529844e198f91a7e49e100792cbc9947
 #else
   printf("Aux Registers Cleared\n\n");
 #endif
@@ -703,13 +650,8 @@ void adBms6830_clear_spin_measurement(uint8_t tIC)
 {
   adBmsWakeupIc(tIC);
   spiSendCmd(CLRSPIN);
-<<<<<<< HEAD
-#ifdef MBED
-  printf("Spin Registers Cleared\n\n");
-=======
 #ifdef MBED5
   pc.printf("Spin Registers Cleared\n\n");
->>>>>>> 276466f8529844e198f91a7e49e100792cbc9947
 #else
   printf("Spin Registers Cleared\n\n");
 #endif
@@ -724,13 +666,8 @@ void adBms6830_clear_fcell_measurement(uint8_t tIC)
 {
   adBmsWakeupIc(tIC);
   spiSendCmd(CLRFC);
-<<<<<<< HEAD
-#ifdef MBED
-  printf("Fcell Registers Cleared\n\n");
-=======
 #ifdef MBED5
   pc.printf("Fcell Registers Cleared\n\n");
->>>>>>> 276466f8529844e198f91a7e49e100792cbc9947
 #else
   printf("Fcell Registers Cleared\n\n");
 #endif

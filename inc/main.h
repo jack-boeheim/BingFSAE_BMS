@@ -90,7 +90,7 @@ void assert_fault_high();
 
 void assert_fault_low();
 
-void voltage_can_message(cell_asic *IC,CANMessage *pCan_v_msg);
+void voltage_can_message(cell_asic *IC);
 
 bool check_OV_UV_flags(cell_asic *IC, uint16_t * pCellErrorBuf);
 

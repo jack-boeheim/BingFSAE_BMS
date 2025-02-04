@@ -24,8 +24,8 @@ Using the BMS Driver Application can:
 */
 #include "common.h"
 #include "adbms_main.h"
-#ifdef MBED
-//extern Serial pc;
+#ifdef MBED5
+extern Serial pc;
 #endif
 /**************************************** BMS Driver APIs definitions ********************************************/
 /* Precomputed CRC15 Table */
