@@ -22,6 +22,12 @@ and its licensor.
 
 #ifdef MBED5
 extern Serial pc;
+
+void Delay_ms(uint32_t delay)
+{
+  wait_ms((int)delay);
+}
+
 #endif
 
 #ifdef MBED
@@ -45,7 +51,7 @@ extern DigitalOut chip_select;
 */
 void Delay_ms(uint32_t delay)
 {
-  wait_ms((int)delay);
+  ThisThread::sleep_for(delay);
 }
 
 /**

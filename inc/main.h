@@ -32,7 +32,7 @@
 #define PIN_DRIVING     D14
 #define PIN_CHARGING    D15
 #define PIN_FAULT       D0
-#define PIN_SHUTDOWN    PG_11 
+#define PIN_SHUTDOWN    D1
 
 /*------------------------------------------
  Macros - Communication Rates

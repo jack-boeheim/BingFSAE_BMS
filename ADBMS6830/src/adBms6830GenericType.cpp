@@ -24,7 +24,7 @@ Using the BMS Driver Application can:
 */
 #include "common.h"
 #include "adbms_main.h"
-#ifdef MBED
+#ifdef MBED5
 extern Serial pc;
 #endif
 /**************************************** BMS Driver APIs definitions ********************************************/
@@ -292,7 +292,7 @@ uint8_t regData_size
   copyArray = (uint8_t *)calloc(BYTES_IN_REG, sizeof(uint8_t));
   if((data == NULL) || (copyArray == NULL))
   {
-#ifdef MBED     
+#ifdef MBED5   
     pc.printf(" Failed to allocate spi read data memory \n");
 #else
     printf(" Failed to allocate spi read data memory \n");
@@ -379,7 +379,7 @@ void adBmsReadData(uint8_t tIC, cell_asic *ic, uint8_t cmd_arg[2], TYPE type, GR
   cmd_count = (uint8_t *)calloc(tIC, sizeof(uint8_t));
   if((pec_error == NULL) || (cmd_count == NULL) || (read_buffer == NULL))
   {
-#ifdef MBED
+#ifdef MBED5
     pc.printf(" Failed to allocate memory \n");
 #else
     printf(" Failed to allocate memory \n");
@@ -629,7 +629,7 @@ uint8_t *data
   cmd = (uint8_t *)calloc(CMD_LEN, sizeof(uint8_t)); 
   if(cmd == NULL)
   {
-#ifdef MBED
+#ifdef MBED5
     pc.printf(" Failed to allocate cmd array memory \n");
 #else
     printf(" Failed to allocate cmd array memory \n");
@@ -698,7 +698,7 @@ void adBmsWriteData(uint8_t tIC, cell_asic *ic, uint8_t cmd_arg[2], TYPE type, G
   uint8_t *write_buffer = (uint8_t *)calloc(write_size, sizeof(uint8_t));
   if(write_buffer == NULL)
   {
-#ifdef MBED
+#ifdef MBED5
     pc.printf(" Failed to allocate write_buffer array memory \n");
 #else
     printf(" Failed to allocate write_buffer array memory \n");

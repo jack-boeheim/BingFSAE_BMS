@@ -22,7 +22,9 @@ SPI spi(PIN_SPI_MOSI, PIN_SPI_MISO, PIN_SPI_SCLK);
 CAN can(PB_8, PB_9);
 
 //Configure Serial Communication for Debug 
-Serial pc(USBTX, USBRX);                    
+
+// Serial pc(USBTX, USBRX);                    
+
 Timer timer;
 
 //Variable Declarations 
@@ -46,7 +48,7 @@ int main() {
                 fault = 1;
                 Delay_ms(1);
                 spi_init(); 
-                pc.printf("In init\n"); //testing 
+               // pc.printf("In init\n"); //testing 
                 // Check if Accumulator is in drive mode
                 if (is_driving() && !is_charging()) {
                     // Write config registers
@@ -65,10 +67,10 @@ int main() {
 
                 else {
                     FSM_state = FAULT;
-                    pc.printf("setting FSM_state fault\n");//testing 
+                    // pc.printf("setting FSM_state fault\n");//testing 
                 }
                 
-                pc.printf("end of init\n");//testing 
+                // pc.printf("end of init\n");//testing 
 
                 break;
 
@@ -76,7 +78,7 @@ int main() {
                 fault = 0;
                     while(!is_shutdown_closed()){
                         //Wait until SDC is closed
-                        pc.printf("Waiting for SDC to close");
+                      //  pc.printf("Waiting for SDC to close");
                     }
                 Delay_ms(500); //Wait for Precharge (500ms after SDC closed) (temporary should accept input from Tractive Precharge control board)    
                 FSM_state = DRIVE_MAIN;
@@ -84,7 +86,7 @@ int main() {
             
             case (DRIVE_MAIN): 
             
-                pc.printf("Running Drive Main Measurement Loop");
+                // pc.printf("Running Drive Main Measurement Loop");
                 can.frequency(CAN_BAUD_RATE_DRIVE);
                 adBms6830_write_config(TOTAL_IC, &IC[0]); 
                 adBms6830_start_adc_cell_voltage_measurment(TOTAL_IC);
@@ -117,7 +119,7 @@ int main() {
                 break;
             
             case (FAULT):
-                pc.printf("in fault\n");//testing 
+              //  pc.printf("in fault\n");//testing 
             //  fault = 1;  
             //  assert_fault_high();
             // Include CAN message showing Fault Code 
