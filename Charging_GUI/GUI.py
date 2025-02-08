@@ -17,9 +17,6 @@ INSTANTANEOUS_CELL_VOLTAGE = "Instantaneous Cell Voltage"
 INTERNAL_RESISTANCE = "Internal Resistance"
 OPEN_CIRCUIT_VOLTAGE = "Open Circuit Voltage"
 
-
-
-
 class SerialMonitor:
     def __init__(self, master):
         self.master = master
@@ -30,6 +27,8 @@ class SerialMonitor:
         self.master.state('zoomed')  # Open in maximized state
 
         self.create_widgets()  # Call method to create widgets
+
+        self.mode = self.meas_combobox.get()
 
         self.connection_active = False  # Flag to track connection state
 
@@ -127,45 +126,44 @@ class SerialMonitor:
         phrase = "t0368".encode()  # Marker phrase to look for in serial data
 
         while self.connection_active:
-            self.mode = self.meas_combobox.get()
 
-            if self.mode != self.prev_mode:
+            #If measurement mode changes, clear grid, update mode
+            if self.mode != self.meas_combobox.get():
                 self.clear_matrix()
+                self.mode = self.meas_combobox.get()
 
             if self.ser.in_waiting > 0: #If there are unread bytes
                 data = self.ser.read(self.ser.in_waiting)  # Read all available data
                 if phrase in data:
-                    hex_cell = data[data.find(phrase) + len(phrase): data.find(phrase) + len(phrase) + 2]
-                    decimal_cell = int(hex_cell, 16)
+                    cell_id_hex = data[data.find(phrase) + len(phrase): data.find(phrase) + len(phrase) + 2]
+                    cell_id_decimal = int(cell_id_hex, 16)
 
                     # Calculate row and column indices
-                    row_index = decimal_cell % NUM_ROWS
-                    column_index = decimal_cell // NUM_ROWS
+                    row_index = cell_id_decimal % NUM_ROWS
+                    column_index = cell_id_decimal // NUM_ROWS
 
                     if self.mode == INSTANTANEOUS_CELL_VOLTAGE:
-                        hex_icv = data[data.find(phrase) + len(phrase) + 2: data.find(phrase) + len(phrase) + 6]
-                        decimal_icv = int(hex_icv, 16)
-                        converted_icv = round(((decimal_icv + 10000) * .00015), 3)
-                        dipslayed_value = converted_icv
+                        icv_hex = data[data.find(phrase) + len(phrase) + 2: data.find(phrase) + len(phrase) + 6]
+                        icv_decimal = int(icv_hex, 16)
+                        icv_converted = round(((icv_decimal + 10000) * .00015), 3)
+                        dipslayed_value = icv_converted
                     elif self.mode == INTERNAL_RESISTANCE:
-                        hex_res = data[data.find(phrase) + len(phrase) + 6: data.find(phrase) + len(phrase) + 10]
-                        decimal_res = int(hex_res, 16)
+                        res_hex = data[data.find(phrase) + len(phrase) + 6: data.find(phrase) + len(phrase) + 10]
+                        res_decimal = int(res_hex, 16)
                         #Need proper conversion
-                        converted_res = decimal_res
-                        dipslayed_value = converted_res
+                        res_converted = res_decimal
+                        dipslayed_value = res_converted
                     elif self.mode == OPEN_CIRCUIT_VOLTAGE:
-                        hex_ocv = data[data.find(phrase) + len(phrase) + 10: data.find(phrase) + len(phrase) + 14]
-                        decimal_ocv = int(hex_ocv, 16)
+                        ocv_hex = data[data.find(phrase) + len(phrase) + 10: data.find(phrase) + len(phrase) + 14]
+                        ocv_decimal = int(ocv_hex, 16)
                         #Need proper conversion
-                        converted_ocv = decimal_ocv
-                        dipslayed_value = converted_ocv
+                        ocv_converted = ocv_decimal
+                        dipslayed_value = ocv_converted
 
                     # Update matrix and Treeview
                     if self.matrix[row_index][column_index] != dipslayed_value:
                         self.matrix[row_index][column_index] = dipslayed_value
                         self.update_cell(row_index, self.matrix[row_index])
-
-            self.prev_mode = self.mode
 
             time.sleep(0.01)  # Small delay to reduce CPU usage
 
