@@ -134,8 +134,14 @@ class SerialMonitor:
 
             if self.ser.in_waiting > 0: #If there are unread bytes
                 data = self.ser.read(self.ser.in_waiting)  # Read all available data
-                if phrase in data:
-                    cell_id_hex = data[data.find(phrase) + len(phrase): data.find(phrase) + len(phrase) + 2]
+
+                end_index = 0
+
+                for i in range(data.count(phrase)):
+
+                    phrase_start_index = data.find(phrase, end_index)
+
+                    cell_id_hex = data[phrase_start_index + len(phrase): phrase_start_index + len(phrase) + 2]
                     cell_id_decimal = int(cell_id_hex, 16)
 
                     # Calculate row and column indices
@@ -143,22 +149,24 @@ class SerialMonitor:
                     column_index = cell_id_decimal // NUM_ROWS
 
                     if self.mode == INSTANTANEOUS_CELL_VOLTAGE:
-                        icv_hex = data[data.find(phrase) + len(phrase) + 2: data.find(phrase) + len(phrase) + 6]
+                        icv_hex = data[phrase_start_index + len(phrase) + 2: phrase_start_index + len(phrase) + 6]
                         icv_decimal = int(icv_hex, 16)
                         icv_converted = round(((icv_decimal + 10000) * .00015), 3)
                         dipslayed_value = icv_converted
                     elif self.mode == INTERNAL_RESISTANCE:
-                        res_hex = data[data.find(phrase) + len(phrase) + 6: data.find(phrase) + len(phrase) + 10]
+                        res_hex = data[phrase_start_index + len(phrase) + 6: phrase_start_index + len(phrase) + 10]
                         res_decimal = int(res_hex, 16)
                         #Need proper conversion
                         res_converted = res_decimal
                         dipslayed_value = res_converted
                     elif self.mode == OPEN_CIRCUIT_VOLTAGE:
-                        ocv_hex = data[data.find(phrase) + len(phrase) + 10: data.find(phrase) + len(phrase) + 14]
+                        ocv_hex = data[phrase_start_index + len(phrase) + 10: phrase_start_index + len(phrase) + 14]
                         ocv_decimal = int(ocv_hex, 16)
                         #Need proper conversion
                         ocv_converted = ocv_decimal
                         dipslayed_value = ocv_converted
+
+                    end_index = phrase_start_index + len(phrase) + 14
 
                     # Update matrix and Treeview
                     if self.matrix[row_index][column_index] != dipslayed_value:
