@@ -88,9 +88,9 @@ bool is_charging();
 
 bool is_shutdown_closed();
 
-void assert_fault_high();
+void set_fault_high();
 
-void assert_fault_low();
+void set_fault_low();
 
 void voltage_can_message(cell_asic *IC, CANMessage *can_v_msg);
 

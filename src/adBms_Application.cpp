@@ -67,6 +67,144 @@ LOOP_MEASURMENT MEASURE_AUX             = ENABLED;        /*   This is ENABLED o
 LOOP_MEASURMENT MEASURE_RAUX            = ENABLED;        /*   This is ENABLED or DISABLED       */
 LOOP_MEASURMENT MEASURE_STAT            = ENABLED;        /*   This is ENABLED or DISABLED       */
 
+void app_main()
+{
+  printMenu();
+  adBms6830_init_config(TOTAL_IC, &IC[0]);
+  while(1)
+  {
+    int user_command;
+#ifdef MBED5
+    pc.scanf("%d", &user_command);
+    pc.printf("Enter cmd:%d\n", user_command);
+#else
+    scanf("%d", &user_command);
+    printf("Enter cmd:%d\n", user_command);
+#endif
+    run_command(user_command);
+  }
+}
+
+void run_command(int cmd)
+{
+  switch(cmd)
+  {
+
+  case 1:
+    adBms6830_write_read_config(TOTAL_IC, &IC[0]);
+    break;
+
+  case 2:
+    adBms6830_read_config(TOTAL_IC, &IC[0]);
+    break;
+
+  case 3:
+    adBms6830_start_adc_cell_voltage_measurment(TOTAL_IC);
+    break;
+
+  case 4:
+    adBms6830_read_cell_voltages(TOTAL_IC, &IC[0]);
+    break;
+
+  case 5:
+    adBms6830_start_adc_s_voltage_measurment(TOTAL_IC);
+    break;
+
+  case 6:
+    adBms6830_read_s_voltages(TOTAL_IC, &IC[0]);
+    break;
+
+  case 7:
+    adBms6830_start_avgcell_voltage_measurment(TOTAL_IC);
+    break;
+
+  case 8:
+    adBms6830_read_avgcell_voltages(TOTAL_IC, &IC[0]);
+    break;
+
+  case 9:
+    adBms6830_start_fcell_voltage_measurment(TOTAL_IC);
+    break;
+
+  case 10:
+    adBms6830_read_fcell_voltages(TOTAL_IC, &IC[0]);
+    break;
+
+  case 11:
+    adBms6830_start_aux_voltage_measurment(TOTAL_IC, &IC[0]);
+    break;
+
+  case 12:
+    adBms6830_read_aux_voltages(TOTAL_IC, &IC[0]);
+    break;
+
+  case 13:
+    adBms6830_start_raux_voltage_measurment(TOTAL_IC, &IC[0]);
+    break;
+
+  case 14:
+    adBms6830_read_raux_voltages(TOTAL_IC, &IC[0]);
+    break;
+
+  case 15:
+    adBms6830_read_status_registers(TOTAL_IC, &IC[0]);
+    break;
+
+  case 16:
+    loop_count = 0;
+    adBmsWakeupIc(TOTAL_IC);
+    adBmsWriteData(TOTAL_IC, &IC[0], WRCFGA, Config, A);
+    adBmsWriteData(TOTAL_IC, &IC[0], WRCFGB, Config, B);
+    adBmsWakeupIc(TOTAL_IC);
+    adBms6830_Adcv(REDUNDANT_MEASUREMENT, CONTINUOUS, DISCHARGE_PERMITTED, RESET_FILTER, CELL_OPEN_WIRE_DETECTION);
+    Delay_ms(1); // ADCs are updated at their conversion rate is 1ms
+    adBms6830_Adcv(RD_ON, CONTINUOUS, DISCHARGE_PERMITTED, RESET_FILTER, CELL_OPEN_WIRE_DETECTION);
+    Delay_ms(1); // ADCs are updated at their conversion rate is 1ms
+    adBms6830_Adsv(CONTINUOUS, DISCHARGE_PERMITTED, CELL_OPEN_WIRE_DETECTION);
+    Delay_ms(8); // ADCs are updated at their conversion rate is 8ms
+    while(loop_count < LOOP_MEASUREMENT_COUNT)
+    {
+      measurement_loop();
+      Delay_ms(MEASUREMENT_LOOP_TIME);
+      loop_count = loop_count + 1;
+    }
+    printMenu();
+    break;
+
+  case 17:
+    adBms6830_clear_cell_measurement(TOTAL_IC);
+    break;
+
+  case 18:
+    adBms6830_clear_aux_measurement(TOTAL_IC);
+    break;
+
+  case 19:
+    adBms6830_clear_spin_measurement(TOTAL_IC);
+    break;
+
+  case 20:
+    adBms6830_clear_fcell_measurement(TOTAL_IC);
+    break;
+
+  case 21:
+    adBms6830_write_config(TOTAL_IC, &IC[0]);
+    break;
+
+  case 0:
+    printMenu();
+    break;
+
+  default:
+#ifdef MBED5
+    pc.printf("Incorrect Option\n\n");
+#else
+    printf("Incorrect Option\n\n");
+#endif
+    break;
+  }
+}
+
 /**
 *******************************************************************************
 * @brief Set configuration register A. Refer to the data sheet
