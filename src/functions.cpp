@@ -1,8 +1,9 @@
 #include "main.h"
+#include "common.h"
 #include "adBms_Application.h"
 #include "serialPrintResult.h"
 #include "mcuWrapper.h"
-#include <cstdint>
+
 
 #ifdef MBED5 
 extern Serial pc;
@@ -17,9 +18,8 @@ extern DigitalIn driving;
 extern DigitalIn charging;
 extern DigitalIn shutdown_tap;
 extern DigitalOut fault;
-extern Timer canTimer;
-
-
+extern Timer timer;
+extern PwmOut fan1;
 
 /*-----------------------------------------------------------------------------
  Initialize SPI communication protocol
@@ -64,7 +64,7 @@ void set_fault_high(){fault = 1;}
 void set_fault_low(){fault = 0;}
 
 
-bool check_OV_UV_flags(cell_asic *IC, uint16_t *pCellErrorBuf){
+_Bool check_OV_UV_flags(cell_asic *IC, uint16_t *pCellErrorBuf){
 /*
     
     Flags Fetched from measurement_loop function and stored in IC[].statcd.
@@ -91,26 +91,27 @@ bool check_OV_UV_flags(cell_asic *IC, uint16_t *pCellErrorBuf){
     return errorCnt > 0;
 }
 
-void voltage_can_message(cell_asic *IC) {
+void voltage_can_message(cell_asic *IC, CANMessage *can_v_msg) {
 
-   CANMessage can_v_msg;
-   can_v_msg.id = CAN_CELL_V_ID;    // Set CAN ID 
-   can_v_msg.format = CANStandard;  // Use standard CAN format (11-bit ID)
-   can_v_msg.type = CANData;        // Message type (data frame) 
-   can_v_msg.len = 8;               // Set length to 8 bytes
+   can_v_msg->id = CAN_CELL_V_ID;    // Set CAN ID 
+   can_v_msg->format = CANStandard;  // Use standard CAN format (11-bit ID)
+   can_v_msg->type = CANData;        // Message type (data frame) 
+   can_v_msg->len = 8;               // Set length to 8 bytes
     for (int i = 0; i < NUM_MODULES;  ++i){
         for(int j = 0; j < NUM_CELL_PER_MODULE; ++j){
-                can_v_msg.data[0] = 12*i + j; //Cell ID
-                can_v_msg.data[1] = ((IC[i].cell.c_codes[j] >> 8) & 0xFF); //8 MSB of InstantaneousCell Voltage 
-                can_v_msg.data[2] = (IC[i].cell.c_codes[j] & 0xFF); //8 LSB of Instantaneous Cell Voltage 
-                can_v_msg.data[3] = 0; //8 MSB of Internal Resistance  (placeholder 0 for now)
-                can_v_msg.data[4] = 0; //8 LSB of Internal Resistance  (placeholder 0 for now)
-                can_v_msg.data[5] = 0; //8 MSB of Open Circuit Voltage (placeholder 0 for now)
-                can_v_msg.data[6] = 0; //8 LSB of Open Circuit Voltage (placeholder 0 for now)
-                can_v_msg.data[7] = (((CAN_CELL_V_ID + 8 + can_v_msg.data[0] + can_v_msg.data[1] + 
-                can_v_msg.data[2] + can_v_msg.data[3] + can_v_msg.data[4] + 
-                can_v_msg.data[5] + can_v_msg.data[6]) >> 8) & 0xFF); //Checksum (used same process as Orion)
-                can.write(can_v_msg);      
+                can_v_msg->data[0] = 12*i + j; //Cell ID
+                can_v_msg->data[1] = ((IC[i].cell.c_codes[j] >> 8) & 0xFF); //8 MSB of InstantaneousCell Voltage 
+                can_v_msg->data[2] = (IC[i].cell.c_codes[j] & 0xFF); //8 LSB of Instantaneous Cell Voltage 
+                can_v_msg->data[3] = 0; //8 MSB of Internal Resistance  (placeholder 0 for now)
+                can_v_msg->data[4] = 0; //8 LSB of Internal Resistance  (placeholder 0 for now)
+                can_v_msg->data[5] = 0; //8 MSB of Open Circuit Voltage (placeholder 0 for now)
+                can_v_msg->data[6] = 0; //8 LSB of Open Circuit Voltage (placeholder 0 for now)
+                uint16_t checksum = CAN_CELL_V_ID + 8;
+                for (int i = 0; i < 7; i++){
+                    checksum += can_v_msg->data[i];
+                }
+                can_v_msg->data[7] = checksum & 0xFF; //Checksum (used same process as Orion)
+                can.write(*can_v_msg);      
                 Delay_ms(1);
         } 
        
@@ -138,8 +139,6 @@ void charger_can_message(uint16_t maxChargeV, uint16_t maxChargeI, bool bChargeS
    can.write(can_charge_msg);
 
 }
-
-
 _Bool read_charger_can_message(float * pOutputVoltageV, float * pOutputCurrentA){
 
     //Declare temporary message to receive data
@@ -161,62 +160,3 @@ _Bool read_charger_can_message(float * pOutputVoltageV, float * pOutputCurrentA)
         return 0;
     }
 }
-
-/*-----------------------------------------------------------------------------
- Get all BMS cell voltages stored in an array
------------------------------------------------------------------------------*/
-// void get_cell_voltages(uint8_t tIC, cell_asic * IC, float ** data) {
-//     float voltage;
-//     int16_t temp;
-    
-//     // 
-//     for (uint8_t ic = 0; ic < tIC; ++ic) {
-//         for (uint8_t index = 0; index < CELL; ++index) {
-//             temp = IC[ic].cell.c_codes[index];
-//             voltage = getVoltage(temp);
-
-//             data[ic][index] = voltage;
-//         }
-//     }
-    
-// }
-
-// /*-----------------------------------------------------------------------------
-//  Update all cell voltages
-// -----------------------------------------------------------------------------*/
-// void read_cell_voltages(uint8_t tIC, cell_asic * ic, float ** data) {
-//   adBmsWakeupIc(tIC);
-//   adBmsReadData(tIC, &ic[0], RDCVA, Cell, A);
-//   adBmsReadData(tIC, &ic[0], RDCVB, Cell, B);
-//   adBmsReadData(tIC, &ic[0], RDCVC, Cell, C);
-//   adBmsReadData(tIC, &ic[0], RDCVD, Cell, D);
-//   adBmsReadData(tIC, &ic[0], RDCVE, Cell, E);
-//   adBmsReadData(tIC, &ic[0], RDCVF, Cell, F);
-//   data = get_cell_voltages(tIC, &ic[0], data);
-// }
-
-// /*-----------------------------------------------------------------------------
-//  Initialize the config registers
-// -----------------------------------------------------------------------------*/
-// void config_reg_init() {
-//     uint8_t loop_count = 0;
-
-//     adBmsWakeupIc(NUM_MODULES);
-//     adBmsWriteData(NUM_MODULES, &IC[0], WRCFGA, Config, A);
-//     adBmsWriteData(NUM_MODULES, &IC[0], WRCFGB, Config, B);
-//     adBmsWakeupIc(NUM_MODULES);
-    
-//     adBms6830_Adcv(REDUNDANT_MEASUREMENT, CONTINUOUS, DISCHARGE_PERMITTED, RESET_FILTER, CELL_OPEN_WIRE_DETECTION);
-//     Delay_ms(1);
-//     adBms6830_Adcv(RD_ON, CONTINUOUS, DISCHARGE_PERMITTED, RESET_FILTER, CELL_OPEN_WIRE_DETECTION);
-//     Delay_ms(1);
-//     adBms6830_Adsv(CONTINUOUS, DISCHARGE_PERMITTED, CELL_OPEN_WIRE_DETECTION);
-//     Delay_ms(8);
-
-//     while(loop_count < LOOP_MEASUREMENT_COUNT) {
-//       measurement_loop();
-//       Delay_ms(MEASUREMENT_LOOP_TIME);
-      
-//       ++loop_count;
-//     }
-// }

@@ -1,23 +1,18 @@
-// Safe guards
 #ifndef MAIN_H
 #define MAIN_H
 
-/*
-    https://os.mbed.com/platforms/SDP_K1/
-    Mbed SDP-K1 board MOSI, MOSI, SCK definition.
-    Arduino Header Pinout
-    MOSI = D11
-    MISO = D12
-    SCK  = D13
-    CSB =  D10
-*/
+
+/*------------------------------------------
+ Macros - Software Modes
+------------------------------------------*/
+// #define DEBUG Enable to use Serial Debug Statements 
+// #define MBED5 Enable for use with MBED 5 OS 
 
 /*------------------------------------------
  Libraries
 ------------------------------------------*/
 #include "adbms_main.h"
-
-
+#include "common.h"
 
 /*------------------------------------------
  Macros - Pins (Pin Defs to change according to Board Design)
@@ -33,6 +28,16 @@
 #define PIN_CHARGING    D15
 #define PIN_FAULT       D0
 #define PIN_SHUTDOWN    D1
+#define PIN_FAN_1       D2
+#define PIN_FAN_2
+#define PIN_FAN_3
+#define PIN_FAN_4
+#define PIN_FAN_5
+#define PIN_FAN_6
+#define PIN_FAN_7
+#define PIN_FAN_8
+
+
 
 /*------------------------------------------
  Macros - Communication Rates
@@ -46,9 +51,7 @@
  Macros - CAN Msg IDs
 ------------------------------------------*/
 #define CAN_CELL_V_ID   0x36
-#define CAN_CELL_V_ID   0x36
 #define CAN_CHARGER_MSG_ID 0x1806E5F4
-
 
 /*------------------------------------------
  Macros - Other
@@ -57,6 +60,8 @@
 #define NUM_CELL_PER_MODULE 12
 #define NUM_CELLS  NUM_CELL_PER_MODULE*NUM_MODULES
 #define TOTAL_IC NUM_MODULES
+#define NUM_FANS 1 
+#define FAN_PWM_PERIOD_US 11627
 
 /*------------------------------------------
  States
@@ -69,9 +74,6 @@ typedef enum state {
     CHARGE,
     FAULT
 } state_t;
-
-
-
 
 /*------------------------------------------
  Prototypes
@@ -96,11 +98,4 @@ bool check_OV_UV_flags(cell_asic *IC, uint16_t * pCellErrorBuf);
 
 _Bool read_charger_can_message(float * pOutputVoltageV, float * pOutputCurrentA);
 
-// void get_cell_voltages(uint8_t tIC, cell_asic * IC, float ** data);
-
-// void read_cell_voltages(uint8_t tIC, cell_asic *ic, float ** data);
-
-// void config_reg_init();
-
-// End safe guards
 #endif /* MAIN_H */
