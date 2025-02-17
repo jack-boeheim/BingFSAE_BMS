@@ -1,3 +1,4 @@
+
 #include "adbms_main.h"
 #include "adBms_Application.h"
 #include "main.h"
@@ -78,6 +79,7 @@ int main() {
 
             while(is_shutdown_closed()){
                measurement_loop();
+               voltage_can_message(&IC[0],&can_msg_tx)
                Delay_ms(10);
             }
             
@@ -94,7 +96,7 @@ int main() {
             
              can.frequency(CAN_BAUD_RATE_CHARGE);
              measurement_loop();
-             //voltage_can_message(&IC[0]);
+             voltage_can_message(&IC[0],&can_ms_tx);
             break;
         
         case (FAULT):
