@@ -70,22 +70,19 @@ class pyCandapter:
     def closeDevice(self) -> None:
         self.device.close()
 
-def signal_handler(sig, frame):
-    candapter.closeCANBus()
-    exit(0)
-
-
-signal.signal(signal.SIGINT, signal_handler)
-
 candapter = pyCandapter(PORT, SERIALBAUDRATE)
+
+candapter.closeCANBus()
 
 candapter.openCANBus(CANBAUDRATE)
 
-data = b'deadbeefcafebabe'
+data = b'\xde\xad\xbe\xef\xde\xad\xbe\xef'
 
 message = can.Message(arbitration_id=0x036, data=data, is_extended_id=False)
 
 while(1):
     candapter.sendCANMessage(message)
+
+    time.sleep(1)
     
     
