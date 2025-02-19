@@ -74,20 +74,18 @@ def signal_handler(sig, frame):
     candapter.closeCANBus()
     exit(0)
 
-if __name__ == "__main__":
 
-    signal.signal(signal.SIGINT, signal_handler)
+signal.signal(signal.SIGINT, signal_handler)
 
-    candapter = pyCandapter(PORT, SERIALBAUDRATE)
+candapter = pyCandapter(PORT, SERIALBAUDRATE)
 
-    candapter.openCANBus(CANBAUDRATE)
+candapter.openCANBus(CANBAUDRATE)
 
-    data = b'deadbeef'
+data = b'deadbeefcafebabe'
 
-    message = can.Message(arbitration_id=0x036, data=data, is_extended_id=False)
-    
+message = can.Message(arbitration_id=0x036, data=data, is_extended_id=False)
+
+while(1):
     candapter.sendCANMessage(message)
-
-    candapter.closeCANBus()
-    candapter.closeDevice()
+    
     
