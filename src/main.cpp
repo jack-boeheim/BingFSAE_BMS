@@ -31,12 +31,14 @@ int main() {
 
     switch (FSM_state) {
         case (INIT):
+            printf("init");
+
             set_fault_high();
             Delay_ms(1);
             spi_init(); 
 
-          // Send AWAKE message
-          //   can.write(CANMessage(0x00, "AWAKE", 5, CANData, CANStandard) );
+            // Send AWAKE message
+            //   can.write(CANMessage(0x00, "AWAKE", 5, CANData, CANStandard) );
 
             // Check if Accumulator is in drive mode
             if (is_driving() && !is_charging()) {
@@ -62,6 +64,8 @@ int main() {
             break;
 
         case (PRECHARGE):
+            printf("precharge");
+
             fault = 0;
                 while(!is_shutdown_closed())
                     continue;
@@ -70,16 +74,18 @@ int main() {
             break;
         
         case (DRIVE_MAIN): 
+
+            printf("dmain");
           
-          can.frequency(CAN_BAUD_RATE_DRIVE);
-          adBms6830_write_config(TOTAL_IC, &IC[0]); 
-          adBms6830_start_adc_cell_voltage_measurment(TOTAL_IC);
-          adBms6830_start_adc_s_voltage_measurment(TOTAL_IC);
-          adBms6830_start_aux_voltage_measurment(TOTAL_IC, &IC[0]);
+            can.frequency(CAN_BAUD_RATE_DRIVE);
+            adBms6830_write_config(TOTAL_IC, &IC[0]); 
+            adBms6830_start_adc_cell_voltage_measurment(TOTAL_IC);
+            adBms6830_start_adc_s_voltage_measurment(TOTAL_IC);
+            adBms6830_start_aux_voltage_measurment(TOTAL_IC, &IC[0]);
 
             while(is_shutdown_closed()){
                measurement_loop();
-               voltage_can_message(&IC[0],&can_msg_tx)
+               voltage_can_message(&IC[0],&can_msg_tx);
                Delay_ms(10);
             }
             
@@ -88,20 +94,25 @@ int main() {
             break;
         
         case (DRIVE_DEBUG):
+            printf("debug");
+
          //Need to figure out a good way to switch into this state (code macro, or input pin)
             can.frequency(CAN_BAUD_RATE_DRIVE);
             break;
         
         case (CHARGE):
-            
-             can.frequency(CAN_BAUD_RATE_CHARGE);
-             measurement_loop();
-             voltage_can_message(&IC[0],&can_ms_tx);
+            printf("charge");
+
+            can.frequency(CAN_BAUD_RATE_CHARGE);
+            measurement_loop();
+            voltage_can_message(&IC[0],&can_msg_tx);
             break;
         
         case (FAULT):
+            printf("fault");
+
             set_fault_high();
-          // Include CAN message showing Fault Code 
+            // Include CAN message showing Fault Code 
             break;
     }
     
