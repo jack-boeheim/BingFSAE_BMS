@@ -161,7 +161,7 @@ _Bool read_charger_can_message(float * pOutputVoltageV, float * pOutputCurrentA)
     }
 }
 
-void set_fan_pwm(float &PWM_speed, int &PWM_period_us, int fan_select){
+void set_fan_pwm(float PWM_speed, int PWM_period_us, int fan_select){
     //percentage of 100 i.e. .25, .50, etc for pwm_speed
     //tested at 40 us (25 kHz), for pwm_period_us
 
