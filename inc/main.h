@@ -28,14 +28,14 @@
 #define PIN_CHARGING    D15
 #define PIN_FAULT       D0
 #define PIN_SHUTDOWN    D1
-#define PIN_FAN_1       D2
-#define PIN_FAN_2
-#define PIN_FAN_3
-#define PIN_FAN_4
-#define PIN_FAN_5
-#define PIN_FAN_6
-#define PIN_FAN_7
-#define PIN_FAN_8
+#define PIN_FAN_0       D2
+#define PIN_FAN_1       D3
+#define PIN_FAN_2       D4
+#define PIN_FAN_3       D5
+#define PIN_FAN_4       D6
+#define PIN_FAN_5       D7
+#define PIN_FAN_6       D8
+#define PIN_FAN_7       D9
 
 
 
@@ -97,5 +97,7 @@ void voltage_can_message(cell_asic *IC, CANMessage *can_v_msg);
 bool check_OV_UV_flags(cell_asic *IC, uint16_t * pCellErrorBuf);
 
 _Bool read_charger_can_message(float * pOutputVoltageV, float * pOutputCurrentA);
+
+void set_fan_pwm(float PWM_speed, int PWM_period_us, int fan_select);
 
 #endif /* MAIN_H */

@@ -13,7 +13,14 @@ DigitalOut chip_select(PIN_SPI_CS); // SPI chip select
 DigitalOut mosi(PIN_SPI_MOSI);      // SPI MOSI
 DigitalIn miso(PIN_SPI_MISO);       // SPI MISO
 DigitalOut sclk(PIN_SPI_SCLK);      // SPI CLK
+PwmOut fan0(PIN_FAN_0);  
 PwmOut fan1(PIN_FAN_1);  
+PwmOut fan2(PIN_FAN_2);  
+PwmOut fan3(PIN_FAN_3);  
+PwmOut fan4(PIN_FAN_4);  
+PwmOut fan5(PIN_FAN_5);  
+PwmOut fan6(PIN_FAN_6);  
+PwmOut fan7(PIN_FAN_7);  
 SPI spi(PIN_SPI_MOSI, PIN_SPI_MISO, PIN_SPI_SCLK);
 CAN can(PB_8, PB_9);
 Timer timer;

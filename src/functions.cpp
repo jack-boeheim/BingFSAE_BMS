@@ -160,3 +160,45 @@ _Bool read_charger_can_message(float * pOutputVoltageV, float * pOutputCurrentA)
         return 0;
     }
 }
+
+void set_fan_pwm(float &PWM_speed, int &PWM_period_us, int fan_select){
+    //percentage of 100 i.e. .25, .50, etc for pwm_speed
+    //tested at 40 us (25 kHz), for pwm_period_us
+
+    switch (fan_select){
+        case 0:
+            fan0.write(PWM_speed);
+            fan0.period_us(PWM_period_us);
+            break;
+        case 1:
+            fan1.write(PWM_speed);
+            fan1.period_us(PWM_period_us);
+            break;
+        case 2:
+            fan2.write(PWM_speed);
+            fan2.period_us(PWM_period_us);
+            break;
+        case 3:
+            fan3.write(PWM_speed);
+            fan3.period_us(PWM_period_us);
+            break;
+        case 4:
+            fan4.write(PWM_speed);
+            fan4.period_us(PWM_period_us);
+            break;
+        case 5:
+            fan5.write(PWM_speed);
+            fan5.period_us(PWM_period_us);
+            break;
+        case 6:
+            fan6.write(PWM_speed);
+            fan6.period_us(PWM_period_us);
+            break;
+        case 7:
+            fan7.write(PWM_speed);
+            fan7.period_us(PWM_period_us);
+            break;
+        default:
+            printf("Non existant fan selected.");
+    }
+}
