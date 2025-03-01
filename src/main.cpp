@@ -31,14 +31,14 @@ SPI spi(D11, D12, D13);                     /* SPI MOSI, MISO, SCK */
 // Serial pc(USBTX, USBRX);                    /* USB Tx,Rx */
 Timer timer;
 
-PwmOut fan1(D2);  
-PwmOut fan2(D3);  
-PwmOut fan3(D4);  
-PwmOut fan4(D5);  
-PwmOut fan5(D6);  
-PwmOut fan6(D7);  
-PwmOut fan7(D8);  
-PwmOut fan8(D9);  
+PwmOut fan0(D2);  
+PwmOut fan1(D3);  
+PwmOut fan2(D4);  
+PwmOut fan3(D5);  
+PwmOut fan4(D6);  
+PwmOut fan5(D7);  
+PwmOut fan6(D8);  
+PwmOut fan7(D9);  
 
 DigitalIn fan_status(A1); //stealing this pin for the fan state input
 
@@ -48,10 +48,10 @@ int main()
     int pwm_period_us = 40;
 
 
-    pwm_period_us = 11627; //fan feedback testing, 86 hz
+    //pwm_period_us = 11627; //fan feedback testing, 86 hz
   //  spi_init();
   //  adbms_main();
-    for (int i = 1; i<9; i++){
+    for (int i = 0; i<8; i++){
         set_fan_pwm(fan_speed, pwm_period_us, i);
     }
 
@@ -65,6 +65,10 @@ void set_fan_pwm(float &PWM_speed, int &PWM_period_us, int fan_select){
     //tested at 40 us (25 kHz), for pwm_period_us
 
     switch (fan_select){
+        case 0:
+            fan0.write(PWM_speed);
+            fan0.period_us(PWM_period_us);
+            break;
         case 1:
             fan1.write(PWM_speed);
             fan1.period_us(PWM_period_us);
@@ -93,14 +97,9 @@ void set_fan_pwm(float &PWM_speed, int &PWM_period_us, int fan_select){
             fan7.write(PWM_speed);
             fan7.period_us(PWM_period_us);
             break;
-        case 8:
-            fan8.write(PWM_speed);
-            fan8.period_us(PWM_period_us);
-            break;
         default:
             printf("Non existant fan selected.");
     }
-
 }
 
 void test_fan(int fan_select){
