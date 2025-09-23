@@ -7,7 +7,7 @@ import threading
 import datetime
 import time
 
-import pyCandapter
+from pyCandapter import pyCandapter
 
 NUM_MODULES = 8
 NUM_CELLS_PER_MODULE = 12
@@ -85,13 +85,21 @@ class SerialMonitor:
 
         self.candapter = pyCandapter(port, baud)
 
+        self.candapter.closeCANBus()
+
         if self.candapter.openCANBus(CAN_BAUD_RATE):
             # Change button states after successful connection
             self.btn_disconnect["state"] = tk.NORMAL
             self.btn_connect["state"] = tk.DISABLED
             self.btn_export_text["state"] = tk.NORMAL
 
+            print('yay')
+
             self.connection_active = True
+
+            # Start a new thread to read data from the serial port
+            self.thread = threading.Thread(target=self.read_from_port)
+            self.thread.start()
 
         else:
             self.text_log.insert(tk.END, f"Error Opening Can Bus Connection\n")
@@ -113,9 +121,7 @@ class SerialMonitor:
         for i in range(7):
             checksum += msg.data[i]
 
-        checksum &= 0xFF
-
-        if checksum == msg.data[7]:
+        if (checksum & 0xFF) == msg.data[7]:
             return True
         else:
             return False
@@ -148,17 +154,22 @@ class SerialMonitor:
 
                 data = msg.data
 
-                cell_id_hex = data[0:2]
-                cell_id_decimal = int(cell_id_hex, 16)
+                # for i in range(0,8):
+                #     print(data[i])
+                # print('\n')
+
+                #cell_id_hex = data[0]
+                
+                cell_id_decimal = data[0]
 
                 # Calculate row and column indices
                 row_index = cell_id_decimal % NUM_ROWS
                 column_index = cell_id_decimal // NUM_ROWS
 
-                icv_hex = data[2:6]
+                #icv_hex = data[1:3]
 
                 #Convert to decimal from hex (base 16)
-                icv_decimal = int(icv_hex, 16)
+                icv_decimal = (data[1]<<8) + data[2]
 
                 #Convert using Orion specified conversion, round 3 decimal places
                 icv_converted = round(((icv_decimal + 10000) * .00015), 3)
