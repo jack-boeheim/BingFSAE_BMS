@@ -92,9 +92,6 @@ class SerialMonitor:
             self.btn_disconnect["state"] = tk.NORMAL
             self.btn_connect["state"] = tk.DISABLED
             self.btn_export_text["state"] = tk.NORMAL
-
-            print('yay')
-
             self.connection_active = True
 
             # Start a new thread to read data from the serial port
@@ -153,10 +150,6 @@ class SerialMonitor:
             for msg in msgs:    
 
                 data = msg.data
-
-                # for i in range(0,8):
-                #     print(data[i])
-                # print('\n')
 
                 #cell_id_hex = data[0]
                 
