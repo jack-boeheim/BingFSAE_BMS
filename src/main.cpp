@@ -32,12 +32,15 @@ state_t FSM_state = INIT;
 float cell_voltages[NUM_MODULES][NUM_CELLS];
 cell_asic IC[NUM_MODULES];
 
+//cell balancing function prototype 
+void passive_cell_balance(uint8_t dutyCycle);
 
 /*-------------------------------------------------------------------------------------------------
  Main Loop
 -------------------------------------------------------------------------------------------------*/
 int main() {
 
+    /*
     while(1){
         
         switch (FSM_state) {
@@ -122,8 +125,81 @@ int main() {
                 break;
         }
     }
-    
+    */
+
+    //init
+    spi_init();
+    adBms6830_init_config(TOTAL_IC, &IC[0]);
+    can.frequency(CAN_BAUD_RATE_DRIVE);
+    adBms6830_write_config(TOTAL_IC, &IC[0]); 
+    adBms6830_start_adc_cell_voltage_measurment(TOTAL_IC);
+
     return 0;
 }
 
+//function specific definitions here for readability 
+#define VOLTAGE_THRESH_MV .01 // 10 mV, balance if v_cell > v_min+thresh
 
+void passive_cell_balance(uint8_t dutyCycle, float max){
+    DCP dischargePermit = DCP_OFF;
+
+    //get cell voltages
+    adBms6830_read_cell_voltages(TOTAL_IC, &IC[0]);
+
+    //convert cell codes into usable voltages 
+    //needs testing, adbms documentation says this formula should work 
+    for(int i = 0; i < NUM_MODULES;  ++i){
+        for(int j = 0; j < NUM_CELL_PER_MODULE; ++j){
+            cell_voltages[i][j] = (IC[i].cell.c_codes[j] * .00015) + 1.5; //Vcell = (code * 150uV) + 1.5V
+        }
+    }
+
+    float minCellVoltage = cell_voltages[0][0]; 
+
+    //find the lowest cell voltage 
+    for(int i = 0; i < NUM_MODULES;  ++i){
+        for(int j = 0; j < NUM_CELL_PER_MODULE; ++j){
+            if (minCellVoltage > cell_voltages[i][j]){
+                minCellVoltage = cell_voltages[i][j];
+            }
+        }
+    }
+
+    float cellThresh = minCellVoltage + VOLTAGE_THRESH_MV;
+    DCC balCells[NUM_MODULES];
+    bool balance = false; 
+
+    //determine which cells to balance 
+    for(int i = 0; i < NUM_MODULES;  ++i){
+        balCells[i] = 0;
+        for(int j = 0; j < NUM_CELL_PER_MODULE; ++j){
+            if (cell_voltages[i][j] > cellThresh){
+                balance = true;
+                balCells[i] |= (1<<j);  
+            }
+        }
+    }
+
+    while(balance){
+        //use discharge commands until all cells are within threshold
+        dischargePermit = DCP_ON; 
+
+        // send adbms6830 board which cells to discharge 
+
+        balance = false; 
+        adBms6830_read_cell_voltages(TOTAL_IC, &IC[0]);
+        for(int i = 0; i < NUM_MODULES;  ++i){
+            balCells[i] = 0;
+            for(int j = 0; j < NUM_CELL_PER_MODULE; ++j){
+                cell_voltages[i][j] = (IC[i].cell.c_codes[j] * .00015) + 1.5; //Vcell = (code * 150uV) + 1.5V
+                
+                if (cell_voltages[i][j] > cellThresh){
+                    balance = true; 
+                    balCells[i] |= (1<<j);  
+                }
+            }
+        }
+    }
+
+    dischargePermit = DCP_OFF;
+}
