@@ -5,7 +5,7 @@
 
 extern SPI spi; 
 extern CAN can;
-extern Serial pc;
+//extern Serial pc;
 extern cell_asic IC;
 extern DigitalOut master;
 extern DigitalOut chip_select;
@@ -31,7 +31,7 @@ void spi_init() {
     spi.frequency(SPI_CLK);
 
     // USB baud rate
-    pc.baud(BAUD_RATE);
+    //pc.baud(BAUD_RATE);
 
 }
 

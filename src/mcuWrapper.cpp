@@ -21,7 +21,7 @@ and its licensor.
 #define WAKEUP_DELAY 4                          /* BMS ic wakeup delay  */
 
 #ifdef MBED
-extern Serial pc;
+//extern Serial pc;
 extern SPI spi;
 extern Timer timer;
 extern DigitalOut chip_select;

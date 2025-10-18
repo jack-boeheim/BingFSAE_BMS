@@ -25,7 +25,7 @@ and its licensor.
 #include "main.h"
 
 #ifdef MBED
-extern Serial pc;
+//extern Serial pc;
 #endif
 /**
 *******************************************************************************
@@ -48,8 +48,8 @@ RSTF    RESET_FILTER                    = RSTF_OFF;
 ERR     INJECT_ERR_SPI_READ             = WITHOUT_ERR;
 
 /* Set Under Voltage and Over Voltage Thresholds */
-const float OV_THRESHOLD = 4.2;                 /* Volt */
-const float UV_THRESHOLD = 3.0;                 /* Volt */
+const float OV_THRESHOLD = 3.5 * 1.1;                 /* Volt */
+const float UV_THRESHOLD = 3.5 * 0.9;                 /* Volt */
 const int OWC_Threshold = 2000;                 /* Cell Open wire threshold(mili volt) */
 const int OWA_Threshold = 50000;                /* Aux Open wire threshold(mili volt) */
 const uint32_t LOOP_MEASUREMENT_COUNT = 1;      /* Loop measurment count */
@@ -74,8 +74,8 @@ void app_main()
   {
     int user_command;
 #ifdef MBED
-    pc.scanf("%d", &user_command);
-    pc.printf("Enter cmd:%d\n", user_command);
+    //pc.scanf("%d", &user_command);
+    //pc.printf("Enter cmd:%d\n", user_command);
 #else
     scanf("%d", &user_command);
     printf("Enter cmd:%d\n", user_command);
@@ -196,7 +196,7 @@ void run_command(int cmd)
 
   default:
 #ifdef MBED
-    pc.printf("Incorrect Option\n\n");
+    //pc.printf("Incorrect Option\n\n");
 #else
     printf("Incorrect Option\n\n");
 #endif
@@ -288,7 +288,7 @@ void adBms6830_start_adc_cell_voltage_measurment(uint8_t tIC)
   adBms6830_Adcv(REDUNDANT_MEASUREMENT, CONTINUOUS_MEASUREMENT, DISCHARGE_PERMITTED, RESET_FILTER, CELL_OPEN_WIRE_DETECTION);
   pladc_count = adBmsPollAdc(PLADC);
 #ifdef MBED
-  pc.printf("Cell conversion completed\n");
+  //pc.printf("Cell conversion completed\n");
 #else
   printf("Cell conversion completed\n");
 #endif
@@ -323,7 +323,7 @@ void adBms6830_start_adc_s_voltage_measurment(uint8_t tIC)
   adBms6830_Adsv(CONTINUOUS_MEASUREMENT, DISCHARGE_PERMITTED, CELL_OPEN_WIRE_DETECTION);
   pladc_count = adBmsPollAdc(PLADC);
 #ifdef MBED
-  pc.printf("S-Voltage conversion completed\n");
+  //pc.printf("S-Voltage conversion completed\n");
 #else
   printf("S-Voltage conversion completed\n");
 #endif
@@ -358,7 +358,7 @@ void adBms6830_start_avgcell_voltage_measurment(uint8_t tIC)
   adBms6830_Adcv(RD_ON, CONTINUOUS_MEASUREMENT, DISCHARGE_PERMITTED, RESET_FILTER, CELL_OPEN_WIRE_DETECTION);
   pladc_count = adBmsPollAdc(PLADC);
 #ifdef MBED
-  pc.printf("Avg Cell voltage conversion completed\n");
+  //pc.printf("Avg Cell voltage conversion completed\n");
 #else
   printf("Avg Cell voltage conversion completed\n");
 #endif
@@ -393,7 +393,7 @@ void adBms6830_start_fcell_voltage_measurment(uint8_t tIC)
   adBms6830_Adcv(REDUNDANT_MEASUREMENT, CONTINUOUS_MEASUREMENT, DISCHARGE_PERMITTED, RESET_FILTER, CELL_OPEN_WIRE_DETECTION);
   pladc_count = adBmsPollAdc(PLADC);
 #ifdef MBED
-  pc.printf("F Cell voltage conversion completed\n");
+  //pc.printf("F Cell voltage conversion completed\n");
 #else
   printf("F Cell voltage conversion completed\n");
 #endif
@@ -435,7 +435,7 @@ void adBms6830_start_aux_voltage_measurment(uint8_t tIC, cell_asic *ic)
   adBms6830_Adax(AUX_OPEN_WIRE_DETECTION, OPEN_WIRE_CURRENT_SOURCE, AUX_CH_TO_CONVERT);
   pladc_count = adBmsPollAdc(PLADC);
 #ifdef MBED
-  pc.printf("Aux voltage conversion completed\n");
+  //pc.printf("Aux voltage conversion completed\n");
 #else
   printf("Aux voltage conversion completed\n");
 #endif
@@ -475,7 +475,7 @@ void adBms6830_start_raux_voltage_measurment(uint8_t tIC,  cell_asic *ic)
   adBms6830_Adax2(AUX_CH_TO_CONVERT);
   pladc_count = adBmsPollAdc(PLADC);
 #ifdef MBED
-  pc.printf("RAux voltage conversion completed\n");
+  //pc.printf("RAux voltage conversion completed\n");
 #else
   printf("RAux voltage conversion completed\n");
 #endif
@@ -616,7 +616,7 @@ void adBms6830_clear_cell_measurement(uint8_t tIC)
   adBmsWakeupIc(tIC);
   spiSendCmd(CLRCELL);
 #ifdef MBED
-  pc.printf("Cell Registers Cleared\n\n");
+  //pc.printf("Cell Registers Cleared\n\n");
 #else
   printf("Cell Registers Cleared\n\n");
 #endif
@@ -632,7 +632,7 @@ void adBms6830_clear_aux_measurement(uint8_t tIC)
   adBmsWakeupIc(tIC);
   spiSendCmd(CLRAUX);
 #ifdef MBED
-  pc.printf("Aux Registers Cleared\n\n");
+  //pc.printf("Aux Registers Cleared\n\n");
 #else
   printf("Aux Registers Cleared\n\n");
 #endif
@@ -648,7 +648,7 @@ void adBms6830_clear_spin_measurement(uint8_t tIC)
   adBmsWakeupIc(tIC);
   spiSendCmd(CLRSPIN);
 #ifdef MBED
-  pc.printf("Spin Registers Cleared\n\n");
+  //pc.printf("Spin Registers Cleared\n\n");
 #else
   printf("Spin Registers Cleared\n\n");
 #endif
@@ -664,7 +664,7 @@ void adBms6830_clear_fcell_measurement(uint8_t tIC)
   adBmsWakeupIc(tIC);
   spiSendCmd(CLRFC);
 #ifdef MBED
-  pc.printf("Fcell Registers Cleared\n\n");
+  //pc.printf("Fcell Registers Cleared\n\n");
 #else
   printf("Fcell Registers Cleared\n\n");
 #endif

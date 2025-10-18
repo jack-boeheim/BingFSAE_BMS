@@ -7,7 +7,7 @@
 
 DigitalIn driving(PIN_DRIVING);
 DigitalIn charging(PIN_CHARGING);
-DigitalIn shutdown_tap(PIN_SHUTDOWN);
+//DigitalIn shutdown_tap(PIN_SHUTDOWN);
 DigitalOut fault(PIN_FAULT);
 
 
@@ -24,7 +24,7 @@ SPI spi(PIN_SPI_MOSI, PIN_SPI_MISO, PIN_SPI_SCLK);
 CAN can(PB_8, PB_9);
 
 //Configure Serial Communication for Debug 
-Serial pc(USBTX, USBRX);                    
+//Serial pc(USBTX, USBRX);                    
 
 Timer timer;
 state_t FSM_state = INIT;
@@ -34,6 +34,7 @@ cell_asic IC[NUM_MODULES];
 
 //cell balancing function prototype 
 void passive_cell_balance(uint8_t dutyCycle);
+void read_OVUV_flag(uint8_t tIC, cell_asic *ic);
 
 /*-------------------------------------------------------------------------------------------------
  Main Loop
@@ -166,16 +167,16 @@ void passive_cell_balance(uint8_t dutyCycle, float max){
     }
 
     float cellThresh = minCellVoltage + VOLTAGE_THRESH_MV;
-    DCC balCells[NUM_MODULES];
+    //DCC balCells[NUM_MODULES];
     bool balance = false; 
 
     //determine which cells to balance 
     for(int i = 0; i < NUM_MODULES;  ++i){
-        balCells[i] = 0;
+        //balCells[i] = 0;
         for(int j = 0; j < NUM_CELL_PER_MODULE; ++j){
             if (cell_voltages[i][j] > cellThresh){
                 balance = true;
-                balCells[i] |= (1<<j);  
+                //balCells[i] |= (1<<j);  
             }
         }
     }
@@ -189,17 +190,35 @@ void passive_cell_balance(uint8_t dutyCycle, float max){
         balance = false; 
         adBms6830_read_cell_voltages(TOTAL_IC, &IC[0]);
         for(int i = 0; i < NUM_MODULES;  ++i){
-            balCells[i] = 0;
+            //balCells[i] = 0;
             for(int j = 0; j < NUM_CELL_PER_MODULE; ++j){
                 cell_voltages[i][j] = (IC[i].cell.c_codes[j] * .00015) + 1.5; //Vcell = (code * 150uV) + 1.5V
                 
                 if (cell_voltages[i][j] > cellThresh){
                     balance = true; 
-                    balCells[i] |= (1<<j);  
+                    //balCells[i] |= (1<<j);  
                 }
             }
         }
     }
 
     dischargePermit = DCP_OFF;
+}
+
+void read_OVUV_flag(uint8_t tIC, cell_asic *ic){
+    adBms6830_read_status_registers(TOTAL_IC, &IC[0]);
+    uint16_t OV_cells = 0;
+    uint16_t UV_cells = 0;
+    for (int i = 0; i < tIC; ++i){
+        for (int j = 0; j < NUM_CELLS; ++j){
+            if (ic[i].statd.c_ov[j] == 1){
+                OV_cells |= (1 << j);
+            }
+            else if (ic[i].statd.c_uv[j] == 1){
+                OV_cells |= (1 << j);
+            }
+        }
+
+        printf("Module %d vervolted cells: %x\nModule %d undervolted cells %x\n", i, OV_cells, i, UV_cells);
+    }
 }
