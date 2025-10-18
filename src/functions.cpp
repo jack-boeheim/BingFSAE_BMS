@@ -11,7 +11,7 @@ extern DigitalOut master;
 extern DigitalOut chip_select;
 extern DigitalIn driving;
 extern DigitalIn charging;
-extern DigitalIn shutdown_tap;
+//extern DigitalIn shutdown_tap;
 extern DigitalOut fault;
 
 
@@ -57,7 +57,7 @@ bool is_charging() {
 }
 
 bool is_shutdown_closed(){
-    return shutdown_tap.read();
+    return 0; //shutdown_tap.read();
 }
 
 void set_fault_high(){

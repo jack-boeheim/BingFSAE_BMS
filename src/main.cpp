@@ -135,6 +135,9 @@ int main() {
     adBms6830_write_config(TOTAL_IC, &IC[0]); 
     adBms6830_start_adc_cell_voltage_measurment(TOTAL_IC);
 
+    while (1){
+       read_OVUV_flag(TOTAL_IC, &IC[0]); 
+    }
     return 0;
 }
 
