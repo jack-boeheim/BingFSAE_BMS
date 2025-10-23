@@ -136,7 +136,11 @@ int main() {
     adBms6830_start_adc_cell_voltage_measurment(TOTAL_IC);
 
     while (1){
-       read_OVUV_flag(TOTAL_IC, &IC[0]); 
+        measurement_loop();
+        //voltage_can_message(&IC[0]);
+        printVoltages(TOTAL_IC, &IC[0], TYPE type);
+        read_OVUV_flag(TOTAL_IC, &IC[0]); 
+        Delay_ms(10);
     }
     return 0;
 }
@@ -218,7 +222,7 @@ void read_OVUV_flag(uint8_t tIC, cell_asic *ic){
                 OV_cells |= (1 << j);
             }
             else if (ic[i].statd.c_uv[j] == 1){
-                OV_cells |= (1 << j);
+                UV_cells |= (1 << j);
             }
         }
 
