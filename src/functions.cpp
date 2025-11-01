@@ -94,6 +94,35 @@ void voltage_can_message(cell_asic *IC) {
     }
 }
 
+void temp_can_msg(cell_asic *IC) {
+
+    // voltage = getVoltage(IC[ic].stata.itmp);
+    // printf("ITMP:%f°C\n\n", (voltage/0.0075)-273);
+
+   CANMessage can_temp_msg;
+   can_temp_msg.id = CAN_CELL_TEMP_ID;    // Set CAN ID 
+   can_temp_msg.format = CANStandard;  // Use standard CAN format (11-bit ID)
+   can_temp_msg.type = CANData;        // Message type (data frame) 
+   can_temp_msg.len = 8;               // Set length to 8 bytes
+    for (int i = 0; i < NUM_MODULES;  ++i){
+        for(int j = 0; j < NUM_CELLS_PER_MODULE; ++j){
+                can_temp_msg.data[0] = 12*i + j; //Cell ID
+                can_temp_msg.data[1] = ((IC[i].stata.itmp >> 8) & 0xFF); //8 MSB of temperature Voltage 
+                can_temp_msg.data[2] = (IC[i].stata.itmp & 0xFF); //8 LSB of temperature Voltage 
+                can_temp_msg.data[3] = 0; 
+                can_temp_msg.data[4] = 0; 
+                can_temp_msg.data[5] = 0;
+                can_temp_msg.data[6] = 0;
+                can_temp_msg.data[7] = (((CAN_CELL_V_ID + 8 + can_temp_msg.data[0] + can_temp_msg.data[1] + 
+                can_temp_msg.data[2] + can_temp_msg.data[3] + can_temp_msg.data[4] + 
+                can_temp_msg.data[5] + can_temp_msg.data[6]) >> 8) & 0xFF); //Checksum (used same process as Orion)
+                can.write(can_temp_msg);      
+                Delay_ms(1);
+        } 
+       
+    }
+}
+
 void charger_can_message(uint16_t maxChargeV, uint16_t maxChargeI, bool bChargeSafe){
    CANMessage can_charge_msg;
    can_charge_msg.id = CAN_CHARGER_MSG_ID;  // Set CAN ID 

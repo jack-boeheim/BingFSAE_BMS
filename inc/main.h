@@ -45,6 +45,7 @@
  Macros - CAN Msg IDs
 ------------------------------------------*/
 #define CAN_CELL_V_ID   0x36
+#define CAN_CELL_TEMP_ID 0x63 //Placeholder
 #define CAN_CHARGER_MSG_ID 0x1806E5F4
 
 
