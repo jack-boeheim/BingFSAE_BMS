@@ -6,7 +6,7 @@ import signal
 
 CR = "06".encode()
 
-PORT = 'COM3'
+PORT = 'COM5'
 SERIALBAUDRATE = 9600
 CANBAUDRATE = 250000
 
@@ -70,19 +70,4 @@ class pyCandapter:
     def closeDevice(self) -> None:
         self.device.close()
 
-candapter = pyCandapter(PORT, SERIALBAUDRATE)
-
-candapter.closeCANBus()
-
-candapter.openCANBus(CANBAUDRATE)
-
-data = b'\xde\xad\xbe\xef\xde\xad\xbe\xef'
-
-message = can.Message(arbitration_id=0x036, data=data, is_extended_id=False)
-
-while(1):
-    candapter.sendCANMessage(message)
-
-    time.sleep(1)
-    
     
