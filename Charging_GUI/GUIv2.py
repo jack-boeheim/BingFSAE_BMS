@@ -6,6 +6,8 @@ from serial import Serial
 import threading
 import datetime
 import time
+import can
+
 
 from pyCandapter import pyCandapter
 
@@ -35,6 +37,8 @@ class SerialMonitor:
         self.create_widgets()  # Call method to create widgets
 
         self.connection_active = False  # Flag to track connection state
+
+        self.master.after(100, self.textbox_popup) # Text popup on startup
 
     def create_widgets(self):
         # Port ComboBox Label
@@ -76,6 +80,10 @@ class SerialMonitor:
         # Scrolled Text Area for logs
         self.text_log = scrolledtext.ScrolledText(self.master, wrap=tk.WORD, height=40, width = 150)
         self.text_log.grid(row=1, column=0, columnspan=18, padx=10, pady=10)
+
+        # Send CAN Message Button
+        self.btn_send_hex = ttk.Button(self.master, text="Send CAN Message", command=self.textbox_popup)
+        self.btn_send_hex.grid(row=0, column=6, padx=10, pady=10)
 
     def connect(self):
 
@@ -122,7 +130,6 @@ class SerialMonitor:
             return True
         else:
             return False
-
 
     def read_from_port(self):
         columns = [f"Module {i + 1}" for i in range(NUM_COLUMNS)]  # Define columns
@@ -194,6 +201,56 @@ class SerialMonitor:
                 file.write("\t".join(map(str, row_data)) + "\n")
 
         self.text_log.insert(tk.END, f"Data exported as TXT: {filename}\n")
+
+    
+    def textbox_popup(self):
+       popup = tk.Toplevel(self.master) # creates popup window on top of main window
+       popup.title("Enter HEX") # tells User the popup is to enter Hex
+       screen_width = self.master.winfo_screenwidth() #get size of user screen
+       popup.geometry(f"250x150+{screen_width - 250}+100") # sets size and location
+       popup.transient(self.master) # Popup stays on main window
+       popup.grab_set() # Allows user to move the popup
+       entry_box = ttk.Entry(popup, width=14) # Text input Size
+       entry_box.pack(pady=10) # spacing
+
+       def enter_pressed(event=None): # function for when ok is pressed
+           user_input = entry_box.get().strip().replace(" ", "").upper() # removes space and makes all caps
+           if len(user_input) != 16: # checks to see if it is 8byte ( 16hex )
+               self.text_log.insert(tk.END, "Input must be 16 hex digits\n") # error message
+               return
+           try:
+               data = [int(user_input[i:i+2], 16) for i in range(0, 16, 2)] # converts hex to integer
+               print(data)
+               self.text_log.insert(tk.END, "Sent")
+           except:
+               self.text_log.insert(tk.END, "Invalid hex input\n") # error mesage if invalid
+               return
+           
+           try: # WE LEFT OFF HERE 
+               
+               # Create and send the CAN message
+               timeStamp = time.time()
+               msg = can.Message(arbitration_id=0x036, data=data, is_extended_id = False, timestamp=timeStamp)
+               pyCandapter.readCANMessage(msg) # reads the message?
+               pyCandapter.sendCANMessage(self, msg)
+               print(msg.data)
+
+               self.text_log.insert(tk.END, "Sent CAN Message\n") # indicates CAN message was sent
+               print("can sent")
+           except Exception as errorMessage:
+               self.text_log.insert(tk.END, f"Failed CAN Message Send {errorMessage}\n")
+               print(f"Failed CAN Message Send {errorMessage}\n")
+               return
+           popup.destroy() # destroys the popup
+           self.text_log.insert(tk.END, f"Hex Received: {user_input}\n") # logs it
+       def cancel_pressed(event=None): # fucntion for when cancel is pressed
+           popup.destroy() # destroys popup
+
+       self.text_log.insert(tk.END, "testing\n")
+       ttk.Button(popup, text="Enter", command=enter_pressed).pack(side=tk.LEFT, padx=15, pady=5) # makes the enter button
+       ttk.Button(popup, text="Cancel", command=cancel_pressed).pack(side=tk.LEFT, padx=15, pady=5) # makes the cancel button
+
+       
 
 
 # Main block
