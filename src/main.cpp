@@ -8,29 +8,7 @@
 // initializing flash device
 FlashIAPBlockDevice bd;
 //function grah
-void flash_test() {
-    
 
-    // Initialize the flash IAP block device and print the memory layout
-    bd.init();
-    printf("Flash block device size: %llu\n",         bd.size());
-    printf("Flash block device read size: %llu\n",    bd.get_read_size());
-    printf("Flash block device program size: %llu\n", bd.get_program_size());
-    printf("Flash block device erase size: %llu\n",   bd.get_erase_size());
-
-    // Write "Hello World!" to the first block
-    char *buffer = (char *)malloc(bd.get_erase_size());
-    sprintf(buffer, "Hello World!\n");
-    bd.erase(0, bd.get_erase_size());
-    bd.program(buffer, 0, bd.get_erase_size());
-
-    // Read back what was stored
-    bd.read(buffer, 0, bd.get_erase_size());
-    printf("%s", buffer);
-
-    // Deinitialize the device
-    bd.deinit();
-}
 
 // Set pin modes
 
@@ -74,11 +52,7 @@ int main() {
     adBms6830_start_adc_cell_voltage_measurment(TOTAL_IC);
     adBms6830_start_adc_s_voltage_measurment(TOTAL_IC);
     adBms6830_start_aux_voltage_measurment(TOTAL_IC, &IC[0]);
-
-
-
-    //calling function in main loop
-        flash_test();
+    flash_test();
     
     while(1)
     {
