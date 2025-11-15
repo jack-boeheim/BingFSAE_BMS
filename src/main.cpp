@@ -2,14 +2,7 @@
 #include "adBms_Application.h"
 #include "main.h"
 #include <cstdint>
-#include "functions.cpp"
-#include "FlashIAPBlockDevice.h"
 #include "mbed.h"
-
-
-// initializing flash device
-FlashIAPBlockDevice bd;
-//function grah
 
 
 // Set pin modes
@@ -19,6 +12,7 @@ DigitalIn charging(PIN_CHARGING);
 DigitalIn shutdown_tap(PIN_SHUTDOWN);
 DigitalOut fault(PIN_FAULT);
 
+FlashIAPBlockDevice bd(0x0800000, 524288);
 
 DigitalOut master(MASTER_ENABLE);
 DigitalOut chip_select(PIN_SPI_CS); // SPI chip select
@@ -46,6 +40,8 @@ cell_asic IC[NUM_MODULES];
 -------------------------------------------------------------------------------------------------*/
 int main() {
 
+    // initializing flash device
+
     can.frequency(CAN_BAUD_RATE_CHARGE);
     spi_init();
     adBms6830_init_config(TOTAL_IC, &IC[0]);
@@ -54,11 +50,15 @@ int main() {
     adBms6830_start_adc_cell_voltage_measurment(TOTAL_IC);
     adBms6830_start_adc_s_voltage_measurment(TOTAL_IC);
     adBms6830_start_aux_voltage_measurment(TOTAL_IC, &IC[0]);
+
     flash_test();
-    
+
+    char buffer[20];
+
     while(1)
     {
-        
+        bd.read(buffer, 0, bd.get_erase_size());
+        printf("%s", buffer);
     }
 
 

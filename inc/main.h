@@ -16,6 +16,7 @@
  Libraries
 ------------------------------------------*/
 #include "adbms_main.h"
+#include "FlashIAPBlockDevice.h"
 
 /*------------------------------------------
  Macros - Pins (Pin Defs to change according to Board Design)
@@ -91,6 +92,8 @@ void assert_fault_low();
 void voltage_can_message(cell_asic *IC);
 
 _Bool read_charger_can_message(float * pOutputVoltageV, float * pOutputCurrentA);
+
+void flash_test();
 
 // void get_cell_voltages(uint8_t tIC, cell_asic * IC, float ** data);
 
