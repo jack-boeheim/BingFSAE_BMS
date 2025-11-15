@@ -2,6 +2,9 @@
 #include "adBms_Application.h"
 #include "serialPrintResult.h"
 #include "mcuWrapper.h"
+#include "mbed.h"
+#include "FlashIAPBlockDevice.h"
+
 
 extern SPI spi; 
 extern CAN can;
