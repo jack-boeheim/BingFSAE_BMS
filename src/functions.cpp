@@ -2,6 +2,7 @@
 #include "adBms_Application.h"
 #include "serialPrintResult.h"
 #include "mcuWrapper.h"
+#include <cstdint>
 
 extern SPI spi; 
 extern CAN can;
@@ -14,7 +15,6 @@ extern DigitalIn charging;
 extern DigitalIn shutdown_tap;
 extern DigitalOut fault;
 extern Timer canTimer;
-
 
 
 /*-----------------------------------------------------------------------------

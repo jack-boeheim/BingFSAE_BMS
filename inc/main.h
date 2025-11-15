@@ -16,6 +16,7 @@
  Libraries
 ------------------------------------------*/
 #include "adbms_main.h"
+#include <cstdint>
 
 /*------------------------------------------
  Macros - Pins (Pin Defs to change according to Board Design)
