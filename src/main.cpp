@@ -2,6 +2,9 @@
 #include "adBms_Application.h"
 #include "main.h"
 #include <cstdint>
+#include "functions.cpp"
+#include "FlashIAPBlockDevice.h"
+
 
 // initializing flash device
 FlashIAPBlockDevice bd;
