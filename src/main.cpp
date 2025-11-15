@@ -4,6 +4,7 @@
 #include <cstdint>
 #include "functions.cpp"
 #include "FlashIAPBlockDevice.h"
+#include "mbed.h"
 
 
 // initializing flash device
