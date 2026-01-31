@@ -34,7 +34,7 @@ cell_asic IC[NUM_MODULES];
 
 //cell balancing function prototype 
 void passive_cell_balance(uint8_t dutyCycle);
-void read_OVUV_flag(uint8_t tIC, cell_asic *ic);
+void read_OVUV_flag(uint8_t tIC, cell_asic *ic, uint16_t &OV_cells, uint16_t &UV_cells);
 
 /*-------------------------------------------------------------------------------------------------
  Main Loop
@@ -142,8 +142,8 @@ int main() {
         measurement_loop();
         //voltage_can_message(&IC[0]);
         printVoltages(TOTAL_IC, &IC[0], Cell);
-        read_OVUV_flag(TOTAL_IC, &IC[0], OV_cells, UV_cells); 
-        Delay_ms(10);
+        //read_OVUV_flag(TOTAL_IC, &IC[0], OV_cells, UV_cells); 
+        Delay_ms(1000);
     }
     return 0;
 }
