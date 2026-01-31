@@ -135,11 +135,14 @@ int main() {
     adBms6830_write_config(TOTAL_IC, &IC[0]); 
     adBms6830_start_adc_cell_voltage_measurment(TOTAL_IC);
 
+    uint16_t OV_cells;
+    uint16_t UV_cells;
+
     while (1){
         measurement_loop();
         //voltage_can_message(&IC[0]);
-        printVoltages(TOTAL_IC, &IC[0], TYPE type);
-        read_OVUV_flag(TOTAL_IC, &IC[0]); 
+        printVoltages(TOTAL_IC, &IC[0], Cell);
+        read_OVUV_flag(TOTAL_IC, &IC[0], OV_cells, UV_cells); 
         Delay_ms(10);
     }
     return 0;
@@ -149,10 +152,12 @@ int main() {
 #define VOLTAGE_THRESH_MV .01 // 10 mV, balance if v_cell > v_min+thresh
 
 void passive_cell_balance(uint8_t dutyCycle, float max){
+    uint16_t OV_cells;
+    uint16_t UV_cells;
     DCP dischargePermit = DCP_OFF;
 
-    //get cell voltages
-    adBms6830_read_cell_voltages(TOTAL_IC, &IC[0]);
+    //get overvolt and undervolt cells
+    read_OVUV_flag(TOTAL_IC, &IC[0], OV_cells, UV_cells);
 
     //convert cell codes into usable voltages 
     //needs testing, adbms documentation says this formula should work 
@@ -212,10 +217,10 @@ void passive_cell_balance(uint8_t dutyCycle, float max){
     dischargePermit = DCP_OFF;
 }
 
-void read_OVUV_flag(uint8_t tIC, cell_asic *ic){
+void read_OVUV_flag(uint8_t tIC, cell_asic *ic, uint16_t &OV_cells, uint16_t &UV_cells){
     adBms6830_read_status_registers(TOTAL_IC, &IC[0]);
-    uint16_t OV_cells = 0;
-    uint16_t UV_cells = 0;
+    OV_cells = 0;
+    UV_cells = 0;
     for (int i = 0; i < tIC; ++i){
         for (int j = 0; j < NUM_CELLS; ++j){
             if (ic[i].statd.c_ov[j] == 1){
