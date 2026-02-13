@@ -165,7 +165,7 @@ class SerialMonitor:
                 row_index = cell_id_decimal % NUM_ROWS
                 column_index = cell_id_decimal // NUM_ROWS
 
-                #icv_hex = data[1:3]
+                icv_hex = data[1:3]
 
                 #Convert to decimal from hex (base 16)
                 icv_decimal = (data[1]<<8) + data[2]
@@ -229,6 +229,7 @@ class SerialMonitor:
                msg = can.Message(arbitration_id=0x036, data=data, is_extended_id = False, timestamp=timeStamp)
                self.candapter.sendCANMessage(msg)
                self.text_log.insert(tk.END, "Sent CAN Message\n") # indicates CAN message was sent
+               print(msg)
                print("Can Sent")
            except Exception as errorMessage:
                self.text_log.insert(tk.END, f"Failed CAN Message Send {errorMessage}\n")
