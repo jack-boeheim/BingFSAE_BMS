@@ -1,6 +1,9 @@
+#include "adBms6830Data.h"
 #include "adbms_main.h"
 #include "adBms_Application.h"
 #include "main.h"
+#include "mcuWrapper.h"
+#include "serialPrintResult.h"
 #include <cstdint>
 
 // Set pin modes
@@ -39,6 +42,8 @@ int main() {
 
     can.frequency(CAN_BAUD_RATE_CHARGE);
     spi_init();
+
+    adBmsWakeupIc(TOTAL_IC);
     adBms6830_init_config(TOTAL_IC, &IC[0]);
 
     adBms6830_write_config(TOTAL_IC, &IC[0]); 
@@ -48,8 +53,12 @@ int main() {
 
     while(1)
     {
-        measurement_loop();
-        voltage_can_message(&IC[0]);
+        adBmsWakeupIc(TOTAL_IC);
+        Delay_ms(10);
+        adBms6830_start_adc_cell_voltage_measurment(TOTAL_IC);
+        Delay_ms(10);
+        adBms6830_read_cell_voltages(1, IC);
+        Delay_ms(1000);
     }
 
 

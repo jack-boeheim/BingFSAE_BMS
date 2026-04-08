@@ -27,7 +27,7 @@
 #define PIN_SPI_MOSI    D11
 #define PIN_SPI_MISO    D12
 #define SPI_BITS        8
-#define SPI_MODE        0 // CPOL - CPHA = 0 (0 - 0 = 0)
+#define SPI_MODE        3 // CPOL - CPHA = 0 (0 - 0 = 0)
 
 #define PIN_DRIVING     D14
 #define PIN_CHARGING    D15
@@ -37,7 +37,7 @@
 /*------------------------------------------
  Macros - Communication Rates
 ------------------------------------------*/
-#define SPI_CLK                500000
+#define SPI_CLK                200000
 #define BAUD_RATE              115200
 #define CAN_BAUD_RATE_DRIVE    250000
 #define CAN_BAUD_RATE_CHARGE   250000
