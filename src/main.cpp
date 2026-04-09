@@ -51,6 +51,8 @@ int main() {
     adBms6830_start_adc_s_voltage_measurment(TOTAL_IC);
     adBms6830_start_aux_voltage_measurment(TOTAL_IC, &IC[0]);
 
+    uint16_t pCellErrorBuf[NUM_MODULES];
+
     while(1)
     {
         adBmsWakeupIc(TOTAL_IC);
@@ -58,7 +60,9 @@ int main() {
         adBms6830_start_adc_cell_voltage_measurment(TOTAL_IC);
         Delay_ms(10);
         adBms6830_read_cell_voltages(1, IC);
-        Delay_ms(1000);
+        Delay_ms(10);
+
+        check_OV_UV_flags(IC, pCellErrorBuf);
     }
 
 

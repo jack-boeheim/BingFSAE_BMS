@@ -94,6 +94,8 @@ void voltage_can_message(cell_asic *IC);
 
 _Bool read_charger_can_message(float * pOutputVoltageV, float * pOutputCurrentA);
 
+bool check_OV_UV_flags(cell_asic *IC, uint16_t *pCellErrorBuf);
+
 // void get_cell_voltages(uint8_t tIC, cell_asic * IC, float ** data);
 
 // void read_cell_voltages(uint8_t tIC, cell_asic *ic, float ** data);

@@ -35,6 +35,50 @@ void spi_init() {
     // pc.baud(BAUD_RATE);
 }
 
+bool check_OV_UV_flags(cell_asic *IC, uint16_t *pCellErrorBuf){
+/*
+    
+    Flags Fetched from measurement_loop function and stored in IC[].statcd.
+    This will work for now but can be made more efficient by check the flag directly
+    as it is read in so the data is not looped over twice 
+    (will require editiing of adBms6830ParseStatusD in adBmsParseCreate.cpp)
+
+
+*/
+   uint8_t errorCnt = 0;
+
+    for(int i = 0; i < NUM_MODULES; ++i){
+        for(int j = 0; j < NUM_CELLS_PER_MODULE; ++j){
+            if(IC[i].statd.c_ov[j]){
+                pCellErrorBuf[i] |= (1<<j); //Ecode Problem Cell as One-Hot w/ Cell Location in module
+                errorCnt++;
+            }
+            else if(IC[i].statd.c_uv[j]){
+                 pCellErrorBuf[i] |= (1<<j);
+                 errorCnt++;
+            }
+        }
+    }
+
+    if(errorCnt > 0)
+    {
+        for(int module_ix = 0; module_ix < NUM_MODULES; module_ix++)
+        {
+            printf("OV/UV Fault Detected in Module %d Cells ", module_ix);
+            for(int cell_ix = 0; cell_ix < NUM_CELLS_PER_MODULE; cell_ix++)
+            {
+                if((pCellErrorBuf[module_ix]) & (1<<cell_ix))
+                {
+                    printf("%d ", cell_ix);
+                }
+            }
+            printf("\n\n");
+        }
+    }
+
+    return errorCnt > 0;
+}
+
 /*-----------------------------------------------------------------------------
  Initialize CAN communication protocol
 -----------------------------------------------------------------------------*/
