@@ -13,7 +13,6 @@ DigitalIn charging(PIN_CHARGING);
 DigitalIn shutdown_tap(PIN_SHUTDOWN);
 DigitalOut fault(PIN_FAULT);
 
-
 DigitalOut master(MASTER_ENABLE);
 DigitalOut chip_select(PIN_SPI_CS); // SPI chip select
 DigitalOut mosi(PIN_SPI_MOSI);      // SPI MOSI
@@ -26,12 +25,8 @@ SPI spi(PIN_SPI_MOSI, PIN_SPI_MISO, PIN_SPI_SCLK);
 // Configure CAN
 CAN can(PB_8, PB_9);
 
-//Configure Serial Communication for Debug 
-//Serial pc(USBTX, USBRX);                    
-
 Timer timer;
 state_t FSM_state = INIT;
-// assert_fault_high();
 float cell_voltages[NUM_MODULES][NUM_CELLS];
 cell_asic IC[NUM_MODULES];
 
@@ -57,15 +52,16 @@ int main() {
     {
         adBmsWakeupIc(TOTAL_IC);
         Delay_ms(10);
-        adBms6830_start_adc_cell_voltage_measurment(TOTAL_IC);
-        Delay_ms(10);
         measurement_loop();
         Delay_ms(10);
         adBms6830_read_cell_voltages(TOTAL_IC, IC);
         Delay_ms(10);
         adBms6830_read_status_registers(TOTAL_IC, IC);
         Delay_ms(10);
-        check_OV_UV_flags(IC, pCellErrorBuf);
+        adBms6830_read_aux_voltages(TOTAL_IC, IC);
+        Delay_ms(10);
+
+        //check_OV_UV_flags(IC, pCellErrorBuf);
         Delay_ms(1000);
     }
 
