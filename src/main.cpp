@@ -51,7 +51,7 @@ int main() {
     adBms6830_start_adc_s_voltage_measurment(TOTAL_IC);
     adBms6830_start_aux_voltage_measurment(TOTAL_IC, &IC[0]);
 
-    uint16_t pCellErrorBuf[NUM_MODULES];
+    uint16_t pCellErrorBuf[NUM_MODULES] = {0};
 
     while(1)
     {
@@ -59,10 +59,14 @@ int main() {
         Delay_ms(10);
         adBms6830_start_adc_cell_voltage_measurment(TOTAL_IC);
         Delay_ms(10);
-        adBms6830_read_cell_voltages(1, IC);
+        measurement_loop();
         Delay_ms(10);
-
+        adBms6830_read_cell_voltages(TOTAL_IC, IC);
+        Delay_ms(10);
+        adBms6830_read_status_registers(TOTAL_IC, IC);
+        Delay_ms(10);
         check_OV_UV_flags(IC, pCellErrorBuf);
+        Delay_ms(1000);
     }
 
 

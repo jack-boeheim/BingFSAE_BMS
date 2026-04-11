@@ -37,12 +37,15 @@ void spi_init() {
 
 bool check_OV_UV_flags(cell_asic *IC, uint16_t *pCellErrorBuf){
 /*
-    
     Flags Fetched from measurement_loop function and stored in IC[].statcd.
     This will work for now but can be made more efficient by check the flag directly
     as it is read in so the data is not looped over twice 
     (will require editiing of adBms6830ParseStatusD in adBmsParseCreate.cpp)
 
+    Must call:
+        measurement_loop(); THEN
+        adBms6830_read_status_registers(TOTAL_IC, IC); THEN
+        check_OV_UV_flags(IC, pCellErrorBuf);
 
 */
    uint8_t errorCnt = 0;
