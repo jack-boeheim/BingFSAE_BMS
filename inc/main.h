@@ -96,6 +96,10 @@ _Bool read_charger_can_message(float * pOutputVoltageV, float * pOutputCurrentA)
 
 bool check_OV_UV_flags(cell_asic *IC, uint16_t *pCellErrorBuf);
 
+float get_temp_from_enepaq_therm_voltage(cell_asic IC, uint8_t gpio_pin);
+
+float get_aux_voltage(cell_asic IC, uint8_t gpio_pin);
+
 // void get_cell_voltages(uint8_t tIC, cell_asic * IC, float ** data);
 
 // void read_cell_voltages(uint8_t tIC, cell_asic *ic, float ** data);

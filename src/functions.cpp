@@ -16,7 +16,6 @@ extern DigitalIn shutdown_tap;
 extern DigitalOut fault;
 extern Timer canTimer;
 
-
 /*-----------------------------------------------------------------------------
  Initialize SPI communication protocol
 -----------------------------------------------------------------------------*/

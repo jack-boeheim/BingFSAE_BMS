@@ -61,6 +61,13 @@ int main() {
         adBms6830_read_aux_voltages(TOTAL_IC, IC);
         Delay_ms(10);
 
+        for(int i = 0; i < 12; i++)
+        {
+            float temp = 0;
+            temp = get_temp_from_enepaq_therm_voltage(IC[0], i);
+            printf("GPIO:%d, TEMP:%f\n", i, temp);
+        }
+        printf("\n\n");
         //check_OV_UV_flags(IC, pCellErrorBuf);
         Delay_ms(1000);
     }
